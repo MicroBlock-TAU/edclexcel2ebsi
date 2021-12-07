@@ -1,0 +1,245 @@
+/* Copyright 2021 Tampere University
+ * This software was developed as a part of the MicroBlock project: https://www.tuni.fi/en/research/microblock-advancing-exchange-micro-credentials-ebsi
+ * This source code is licensed under the MIT license. See LICENSE in the repository root directory.
+ * Author(s): Otto Hylli <otto.hylli@tuni.fi>
+*/
+package fi.tuni.microblock.edclexcel2ebsi;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.util.CellAddress;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import id.walt.signatory.ProofConfig;
+import id.walt.signatory.SignatoryDataProvider;
+import id.walt.vclib.model.VerifiableCredential;
+import id.walt.vclib.credentials.VerifiableDiploma;
+
+/** A custom data provider to be used with ssikit for getting diploma contents from the EDCL excel file.
+ * @author Otto Hylli
+ *
+ */
+public class DiplomaDataProvider implements SignatoryDataProvider {
+    
+    // used to separate student email and achievement in the proof config.
+    public final static String IDENTITY_SEPARATOR = "::";
+    
+    protected final static int CREDENTIALS_HEADER_ROW_NUM = 7; 
+    
+    
+    // the excel data
+    protected XSSFWorkbook credentialData;
+    
+    // the sheet and DataTable instances for the different sheets of the excel.
+    protected XSSFSheet persons;
+    protected PersonsTable personsTable;
+    protected CredentialsTable credentialsTable;
+    protected OrganisationsTable organisationsTable;
+    protected XSSFSheet credentials;
+    
+     /** Create a data provider from the credentials.xlsm file in the current working directory.
+     * 
+     */
+    public DiplomaDataProvider() {
+        try {
+            OPCPackage pkg = OPCPackage.open(new File("credentials.xlsm"));
+            credentialData = new XSSFWorkbook(pkg);
+            /*for ( var i : credentialData.getAllNames()) {
+                System.out.println(i.getNameName() +" " +i.getRefersToFormula());
+            }*/
+            persons = credentialData.getSheet("Persons");
+            personsTable = new PersonsTable( credentialData, this );
+            credentials = credentialData.getSheet("Europass Credentials");
+            organisationsTable = new OrganisationsTable( credentialData, this );
+            credentialsTable = new CredentialsTable( credentialData, this );
+            
+            /*for ( var sheet : credentialData ) {
+                System.out.println( sheet.getSheetName() );
+            }*/
+        } catch (InvalidFormatException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.exit(1);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+    
+    /** Create the contents of the verifiable diploma.
+     *
+     */
+    @Override
+    public VerifiableCredential populate( VerifiableCredential template, ProofConfig proofConfig ) {
+        if (template instanceof VerifiableDiploma) {
+            // get student email and achievement from the proof config and separate them.
+            var identifier = proofConfig.getDataProviderIdentifier().split(IDENTITY_SEPARATOR);
+            var email = identifier[0];
+            var course = identifier[1];
+            // get excel row containing the student matching the email and achievement.
+            XSSFRow personalInfo = getPersonalInfo(email, course);
+            // get the corresponding credential info
+            var credentialInfo = getCredential(personalInfo);
+            credentialsTable.setCurrentRow(credentialInfo.getRowNum());
+            // get the organisation row the credential row points to
+            organisationsTable.setCurrentRow( credentialsTable.getLinkedOrganisation().getRowNum() );
+            //printRow(credentialInfo);
+            
+            VerifiableDiploma diploma = (VerifiableDiploma)template;
+            diploma.setIssuer(proofConfig.getIssuerDid());
+            diploma.setId( "education#higherEducation#" +UUID.randomUUID().toString());
+            diploma.setIssuanceDate(getCurrentDate());
+            var subject = new VerifiableDiploma.CredentialSubject();
+            subject.setId(proofConfig.getSubjectDid());
+            subject.setDateOfBirth("2021-02-15");
+            personsTable.setCurrentRow(personalInfo.getRowNum());
+            subject.setFamilyName(personsTable.getCellValueForCurrentRow( PersonsTable.FAMILY_NAME_COLUMN));
+            subject.setGivenNames(personsTable.getCellValueForCurrentRow( PersonsTable.GIVEN_NAME_COLUMN));
+            
+            var achievement = new VerifiableDiploma.CredentialSubject.LearningAchievement("urn:epass:learningAchievement:1", course, null, null);
+            subject.setLearningAchievement(achievement);
+            var awardingBody = new VerifiableDiploma.CredentialSubject.AwardingOpportunity.AwardingBody( 
+                    "id", null, 
+                    organisationsTable.getLegalIdentifier(), 
+                    organisationsTable.getCommonName(), 
+                    organisationsTable.getHomepage() );
+            var awardingOpportunity = new VerifiableDiploma.CredentialSubject.AwardingOpportunity(
+                    "id", 
+                    "identifier", 
+                    awardingBody, 
+                    organisationsTable.getLocation(), null, null );
+            
+            var specification = new VerifiableDiploma.CredentialSubject.LearningSpecification("urn:epass:qualification:1", new ArrayList<>(), null, null, new ArrayList<>());
+            subject.setLearningSpecification(specification);
+            subject.setAwardingOpportunity(awardingOpportunity);
+            diploma.setCredentialSubject(subject);
+            return diploma;
+        }
+        
+        throw new IllegalArgumentException("Only diploma is supported.");
+    }
+    
+    /** Get current state as string.
+     * @return Current date.
+     */
+    private String getCurrentDate() {
+        // todo: fix time zone.
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
+    }
+    
+    /** From the persons sheet get row that has the given email and achievement.
+     * @param expectedEmail student email
+     * @param expectedAchievement name of an achievement
+     * @return Row having the student with the email and achievement.
+     * @throws ExcelStructureException There is something wrong with the excel.
+     * @throws RequiredDataNotFoundException No row with the given email and achievement found.
+     */
+    protected XSSFRow getPersonalInfo(String expectedEmail, String expectedAchievement ) throws ExcelStructureException, RequiredDataNotFoundException {
+        var values = Map.of( PersonsTable.EMAIL_COLUMN, expectedEmail, PersonsTable.ACHIEVEMENT_COLUMN, expectedAchievement);
+        return personsTable.getRowWithValues( values );
+    }
+
+    /** Used in debugging to print a row from the excel.
+     * @param row row to be printed.
+     */
+    @SuppressWarnings("unused")
+    private void printRow(XSSFRow row) {
+        for ( var item : row ) {
+            if ( item.getCellType() == CellType.FORMULA ) {
+                if (item.getCachedFormulaResultType() == CellType.STRING) {
+                    System.out.println(item.getAddress() +": " +item.getStringCellValue() +" from " +item);
+                }
+                
+                else {
+                    System.out.println(item.getAddress() +": " +item +" " +item.getCachedFormulaResultType() );
+                }
+            }
+            
+            else {
+                System.out.println(item.getAddress() +": " +item +" " +item.getCellType());
+            }
+        }
+    }
+    
+    /** Old method for getting a specific cell by address.
+     * @param sheet excel sheet
+     * @param addressStr cell address e.g. b5
+     * @return the cell at the address.
+     */
+    @SuppressWarnings("unused")
+    private XSSFCell getCellByAddress(XSSFSheet sheet, String addressStr ) {
+        var address = new CellAddress(addressStr);
+        return sheet.getRow(address.getRow()).getCell(address.getColumn());
+    }
+    
+    /** Get the credentials sheet row that corresponds to the given persons row.
+     * @param person Row of the persons sheet
+     * @return Corresponding row of the credentials sheet.
+     */
+    private XSSFRow getCredential(XSSFRow person) {
+        return credentials.getRow(person.getRowNum());
+    }
+    
+    /** For the given row find number of the column that has the given content.
+     * @param row the row
+     * @param columnContent content of a cell on the row
+     * @return number of the column that had the content.
+     * @throws ExcelStructureException Cell with content not found.
+     */
+    protected int findColumnNumFor(XSSFRow row, String columnContent ) throws ExcelStructureException {
+        for ( var cell : row ) {
+            if ( cell.toString().equals(columnContent)) {
+                return cell.getColumnIndex();
+            }
+        }
+        
+        throw new ExcelStructureException("sheet " +row.getSheet().getSheetName() +" does not have column " +columnContent +" on row " +row.getRowNum() );
+    }
+    
+    /** Indicates that the stucture of the excel file does not match what was expected.
+     * @author Otto Hylli
+     *
+     */
+    static public class ExcelStructureException extends RuntimeException {
+        
+        private static final long serialVersionUID = 5345869342839398427L;
+
+        /** Create with error message.
+         * @param message error message.
+         */
+        public ExcelStructureException( String message) {
+            super(message);
+        }
+    }
+    
+    /** Indicates that some required data was missing from the excel.
+     * @author Otto Hylli
+     *
+     */
+    static public class RequiredDataNotFoundException extends RuntimeException {
+        
+        private static final long serialVersionUID = 6412865597503832798L;
+
+        /** Create with given error message.
+         * @param message error message.
+         */
+        public RequiredDataNotFoundException( String message ) {
+            super(message);
+        }
+    }
+}
