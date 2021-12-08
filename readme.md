@@ -56,7 +56,8 @@ and stored to file diploma.json using the following command:
 ```
 
 The following JSON is then produced and as can be seen it does not yet contain
-much and has some placeholder content:
+much, the latest diploma schema is not yet used  and it has some placeholder
+content:
 
 ```json
 {
