@@ -25,8 +25,8 @@ public abstract class DataTable {
     private XSSFSheet sheet;
     // the row containing the column headers.
     private XSSFRow headerRow;
-    // diploma data provider used to access other data tables.
-    private DiplomaDataProvider provider;
+    // credential data used to access other data tables.
+    private CredentialData credentialData;
     // mapping of colun header names to colun number.
     private Map<String, Integer> headerColumns = new HashMap<>();
     // current row that is being processed.
@@ -36,12 +36,12 @@ public abstract class DataTable {
      * 
      * Subclass methods are used to get the name of the sheet in the workbook and number of the row which contains the column headers.
      * @param data The excel workbook that has the sheet. 
-     * @param provider Data provider used with this.
+     * @param credentialData credential data this is a part of.  
      */
-    public DataTable( XSSFWorkbook data, DiplomaDataProvider provider ) {
+    public DataTable( XSSFWorkbook data, CredentialData credentialData ) {
         sheet = data.getSheet(getSheetName());
         this.headerRow = sheet.getRow(getHeaderRowNum());
-        this.provider = provider;
+        this.credentialData = credentialData;
     }
     
     /** Name of the sheet in the workbook.

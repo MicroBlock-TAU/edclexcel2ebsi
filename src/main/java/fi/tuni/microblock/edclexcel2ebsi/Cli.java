@@ -16,7 +16,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Spec;
 
 /** Main class which implements the picocli based command line interface.

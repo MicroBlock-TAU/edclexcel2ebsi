@@ -24,11 +24,11 @@ public class CredentialsTable extends DataTable {
     
     /** Create credentials table for the given workbook.
      * @param data the excel wokrbook
-     * @param provider diploma data provider for accessing other tables.
+     * @param credentialData for accessing other tables.
      */
-    public CredentialsTable( XSSFWorkbook data, DiplomaDataProvider provider ) {
-        super(data, provider);
-        organisationLink = new DataTable.TableLink( this, CredentialsTable.ISSUER_COLUMN, provider.organisationsTable, OrganisationsTable.LEGAL_NAME_COLUMN);
+    public CredentialsTable( XSSFWorkbook data, CredentialData credentials ) {
+        super(data, credentials);
+        organisationLink = new DataTable.TableLink( this, CredentialsTable.ISSUER_COLUMN, credentials.organisationsTable, OrganisationsTable.LEGAL_NAME_COLUMN);
     }
     
     @Override

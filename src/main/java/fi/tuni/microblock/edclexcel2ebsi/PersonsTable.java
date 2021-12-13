@@ -17,8 +17,12 @@ public class PersonsTable extends DataTable {
     protected final static String GIVEN_NAME_COLUMN = "Given Name";
     protected final static int PERSONS_HEADER_ROW_NUM = 7;
 
-    public PersonsTable( XSSFWorkbook data, DiplomaDataProvider provider ) {
-        super(data, provider);
+    /** Create persons table for the given work book.
+     * @param data The excel work book
+     * @param credentials for accessing other tables.
+     */
+    public PersonsTable( XSSFWorkbook data, CredentialData credentials ) {
+        super(data, credentials);
     }
     
     @Override
@@ -29,5 +33,19 @@ public class PersonsTable extends DataTable {
     @Override
     public int getHeaderRowNum() {
         return PERSONS_HEADER_ROW_NUM;
+    }
+    
+    /** Get family name for current row.
+     * @return family name for current row.
+     */
+    public String getFamilyName() {
+        return getCellValueForCurrentRow( PersonsTable.FAMILY_NAME_COLUMN);
+    }
+    
+    /** Get given name for person on current row.
+     * @return given name on current row.
+     */
+    public String getGivenName() {
+        return getCellValueForCurrentRow( PersonsTable.GIVEN_NAME_COLUMN);
     }
 }

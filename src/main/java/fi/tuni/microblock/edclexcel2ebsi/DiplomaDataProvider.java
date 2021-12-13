@@ -5,27 +5,21 @@
 */
 package fi.tuni.microblock.edclexcel2ebsi;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import id.walt.signatory.ProofConfig;
 import id.walt.signatory.SignatoryDataProvider;
-import id.walt.vclib.model.VerifiableCredential;
 import id.walt.vclib.credentials.VerifiableDiploma;
+import id.walt.vclib.model.VerifiableCredential;
 
 /** A custom data provider to be used with ssikit for getting diploma contents from the EDCL excel file.
  * @author Otto Hylli
@@ -36,47 +30,14 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     // used to separate student email and achievement in the proof config.
     public final static String IDENTITY_SEPARATOR = "::";
     
-    protected final static int CREDENTIALS_HEADER_ROW_NUM = 7; 
+    // credential data from xml file
+    protected CredentialData data;
     
-    
-    // the excel data
-    protected XSSFWorkbook credentialData;
-    
-    // the sheet and DataTable instances for the different sheets of the excel.
-    protected XSSFSheet persons;
-    protected PersonsTable personsTable;
-    protected CredentialsTable credentialsTable;
-    protected OrganisationsTable organisationsTable;
-    protected XSSFSheet credentials;
-    
-     /** Create a data provider from the credentials.xlsm file in the current working directory.
-     * 
+    /** Create provider for the given credential data.
+     * @param data the credential data from which this creates credentials.
      */
-    public DiplomaDataProvider() {
-        try {
-            OPCPackage pkg = OPCPackage.open(new File("credentials.xlsm"));
-            credentialData = new XSSFWorkbook(pkg);
-            /*for ( var i : credentialData.getAllNames()) {
-                System.out.println(i.getNameName() +" " +i.getRefersToFormula());
-            }*/
-            persons = credentialData.getSheet("Persons");
-            personsTable = new PersonsTable( credentialData, this );
-            credentials = credentialData.getSheet("Europass Credentials");
-            organisationsTable = new OrganisationsTable( credentialData, this );
-            credentialsTable = new CredentialsTable( credentialData, this );
-            
-            /*for ( var sheet : credentialData ) {
-                System.out.println( sheet.getSheetName() );
-            }*/
-        } catch (InvalidFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            System.exit(1);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            System.exit(1);
-        }
+    public DiplomaDataProvider( CredentialData data ) {
+        this.data = data;
     }
     
     /** Create the contents of the verifiable diploma.
@@ -90,12 +51,12 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var email = identifier[0];
             var course = identifier[1];
             // get excel row containing the student matching the email and achievement.
-            XSSFRow personalInfo = getPersonalInfo(email, course);
+            XSSFRow personalInfo = data.getPersonalInfo(email, course);
             // get the corresponding credential info
-            var credentialInfo = getCredential(personalInfo);
-            credentialsTable.setCurrentRow(credentialInfo.getRowNum());
+            var credentialInfo = data.getCredential(personalInfo);
+            data.credentialsTable.setCurrentRow(credentialInfo.getRowNum());
             // get the organisation row the credential row points to
-            organisationsTable.setCurrentRow( credentialsTable.getLinkedOrganisation().getRowNum() );
+            data.organisationsTable.setCurrentRow( data.credentialsTable.getLinkedOrganisation().getRowNum() );
             //printRow(credentialInfo);
             
             VerifiableDiploma diploma = (VerifiableDiploma)template;
@@ -105,22 +66,22 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var subject = new VerifiableDiploma.CredentialSubject();
             subject.setId(proofConfig.getSubjectDid());
             subject.setDateOfBirth("2021-02-15");
-            personsTable.setCurrentRow(personalInfo.getRowNum());
-            subject.setFamilyName(personsTable.getCellValueForCurrentRow( PersonsTable.FAMILY_NAME_COLUMN));
-            subject.setGivenNames(personsTable.getCellValueForCurrentRow( PersonsTable.GIVEN_NAME_COLUMN));
+            data.personsTable.setCurrentRow(personalInfo.getRowNum());
+            subject.setFamilyName(data.personsTable.getFamilyName());
+            subject.setGivenNames(data.personsTable.getGivenName());
             
             var achievement = new VerifiableDiploma.CredentialSubject.LearningAchievement("urn:epass:learningAchievement:1", course, null, null);
             subject.setLearningAchievement(achievement);
             var awardingBody = new VerifiableDiploma.CredentialSubject.AwardingOpportunity.AwardingBody( 
                     "id", null, 
-                    organisationsTable.getLegalIdentifier(), 
-                    organisationsTable.getCommonName(), 
-                    organisationsTable.getHomepage() );
+                    data.organisationsTable.getLegalIdentifier(), 
+                    data.organisationsTable.getCommonName(), 
+                    data.organisationsTable.getHomepage() );
             var awardingOpportunity = new VerifiableDiploma.CredentialSubject.AwardingOpportunity(
                     "id", 
                     "identifier", 
                     awardingBody, 
-                    organisationsTable.getLocation(), null, null );
+                    data.organisationsTable.getLocation(), null, null );
             
             var specification = new VerifiableDiploma.CredentialSubject.LearningSpecification("urn:epass:qualification:1", new ArrayList<>(), null, null, new ArrayList<>());
             subject.setLearningSpecification(specification);
@@ -142,17 +103,6 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         return formatter.format(date);
     }
     
-    /** From the persons sheet get row that has the given email and achievement.
-     * @param expectedEmail student email
-     * @param expectedAchievement name of an achievement
-     * @return Row having the student with the email and achievement.
-     * @throws ExcelStructureException There is something wrong with the excel.
-     * @throws RequiredDataNotFoundException No row with the given email and achievement found.
-     */
-    protected XSSFRow getPersonalInfo(String expectedEmail, String expectedAchievement ) throws ExcelStructureException, RequiredDataNotFoundException {
-        var values = Map.of( PersonsTable.EMAIL_COLUMN, expectedEmail, PersonsTable.ACHIEVEMENT_COLUMN, expectedAchievement);
-        return personsTable.getRowWithValues( values );
-    }
 
     /** Used in debugging to print a row from the excel.
      * @param row row to be printed.
@@ -187,29 +137,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         return sheet.getRow(address.getRow()).getCell(address.getColumn());
     }
     
-    /** Get the credentials sheet row that corresponds to the given persons row.
-     * @param person Row of the persons sheet
-     * @return Corresponding row of the credentials sheet.
-     */
-    private XSSFRow getCredential(XSSFRow person) {
-        return credentials.getRow(person.getRowNum());
-    }
     
-    /** For the given row find number of the column that has the given content.
-     * @param row the row
-     * @param columnContent content of a cell on the row
-     * @return number of the column that had the content.
-     * @throws ExcelStructureException Cell with content not found.
-     */
-    protected int findColumnNumFor(XSSFRow row, String columnContent ) throws ExcelStructureException {
-        for ( var cell : row ) {
-            if ( cell.toString().equals(columnContent)) {
-                return cell.getColumnIndex();
-            }
-        }
-        
-        throw new ExcelStructureException("sheet " +row.getSheet().getSheetName() +" does not have column " +columnContent +" on row " +row.getRowNum() );
-    }
     
     /** Indicates that the stucture of the excel file does not match what was expected.
      * @author Otto Hylli

@@ -24,10 +24,10 @@ public class OrganisationsTable extends DataTable {
      
     /** Create organisations table for the given workbook.
      * @param data excel workbook
-     * @param provider provider used to access other tables.
+     * @param credentialData used to access other tables.
      */
-    public OrganisationsTable( XSSFWorkbook data, DiplomaDataProvider provider ) {
-        super(data, provider);
+    public OrganisationsTable( XSSFWorkbook data, CredentialData credentials ) {
+        super(data, credentials);
     }
     
     @Override
