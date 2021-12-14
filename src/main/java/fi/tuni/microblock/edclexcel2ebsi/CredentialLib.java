@@ -42,6 +42,7 @@ public class CredentialLib {
     String holderDid;
     String issuerDid;
     private Config config;
+    private CredentialData credentialData;
     
     /** Create CredentialLib from the default config file location.
      * 
@@ -62,7 +63,8 @@ public class CredentialLib {
             new ServiceMatrix("service-matrix.properties");
         }
         
-        DataProviderRegistry.INSTANCE.register(JvmClassMappingKt.getKotlinClass(VerifiableDiploma.class), new DiplomaDataProvider( new CredentialData()));
+        credentialData = new CredentialData();
+        DataProviderRegistry.INSTANCE.register(JvmClassMappingKt.getKotlinClass(VerifiableDiploma.class), new DiplomaDataProvider( credentialData));
         issuerDid = config.get("issuer.did");
         var createDids = config.is( "generateMissingDids" );
         if ( issuerDid == null ) {
@@ -197,8 +199,9 @@ public class CredentialLib {
     }
     
     public List<String> listCredentialsForStudent( String email ) {
-        return null;
+        return credentialData.listCredentialsForStudent(email);
     }
+    
     /** Helper method used to write contents of given string to a file with given path.
      * @param fileName Name of file.
      * @param content Content to be written to the file.

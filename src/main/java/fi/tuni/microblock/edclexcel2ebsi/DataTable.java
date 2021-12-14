@@ -69,6 +69,13 @@ public abstract class DataTable {
     public void setCurrentRow(int currentRow) {
         this.currentRow = currentRow;
     }
+    
+    /** Get number of last row that has data.
+     * @return row number
+     */
+    public int getLastRowNum() {
+        return sheet.getLastRowNum();
+    }
 
     /** Get the number of the column that has the specified heading.
      * @param name name of a colun heading.

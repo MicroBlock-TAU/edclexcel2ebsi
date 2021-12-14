@@ -7,6 +7,8 @@ package fi.tuni.microblock.edclexcel2ebsi;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -82,5 +84,16 @@ public class CredentialData {
      */
     public XSSFRow getCredential(XSSFRow person) {
         return credentials.getRow(person.getRowNum());
+    }
+    
+    public List<String> listCredentialsForStudent( String email ) {
+        var credentials = new ArrayList<String>();
+        for ( int row = personsTable.getHeaderRowNum() +1; row <= personsTable.getLastRowNum(); row++ ) {
+            if ( email.equals( personsTable.getCellValue(row, PersonsTable.EMAIL_COLUMN))) {
+                credentials.add( personsTable.getCellValue(row, PersonsTable.ACHIEVEMENT_COLUMN ));
+            }
+        }
+        
+        return credentials;
     }
 }

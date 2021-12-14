@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import id.walt.vclib.VcLibManager;
 import id.walt.vclib.credentials.VerifiableDiploma;
@@ -80,5 +81,12 @@ class CredentialLibTest {
             assertTrue( policy.getValue(), policy.getKey() + " verification policy.");
         }
         assertTrue( result.getValid(), "Overall verification status." );
+    }
+    
+    @Test void listCredentialsForStudent() {
+        var email = "test2.dan2@test.dat"; 
+        var expectedAchievements = List.of("Data and software business");
+        var achievements = credentials.listCredentialsForStudent(email);
+        assertTrue( achievements.size() == expectedAchievements.size() && expectedAchievements.containsAll(achievements) && achievements.containsAll(expectedAchievements), "expected " +expectedAchievements + " got " +achievements  );
     }
 }
