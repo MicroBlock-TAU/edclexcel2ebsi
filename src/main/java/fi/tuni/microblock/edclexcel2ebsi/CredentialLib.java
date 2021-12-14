@@ -26,12 +26,9 @@ import id.walt.servicematrix.ServiceMatrix;
 import id.walt.servicematrix.ServiceRegistry;
 import id.walt.services.did.DidService;
 import id.walt.services.key.KeyService;
-import id.walt.signatory.DataProviderRegistry;
 import id.walt.signatory.ProofConfig;
 import id.walt.signatory.ProofType;
 import id.walt.signatory.Signatory;
-import id.walt.vclib.credentials.VerifiableDiploma;
-import kotlin.jvm.JvmClassMappingKt;
 
 /** Class for creating, presenting and verifying credentials based on EDCL excel data. 
  * @author Otto Hylli
@@ -64,7 +61,6 @@ public class CredentialLib {
         }
         
         credentialData = new CredentialData();
-        DataProviderRegistry.INSTANCE.register(JvmClassMappingKt.getKotlinClass(VerifiableDiploma.class), new DiplomaDataProvider( credentialData));
         issuerDid = config.get("issuer.did");
         var createDids = config.is( "generateMissingDids" );
         if ( issuerDid == null ) {
@@ -108,22 +104,17 @@ public class CredentialLib {
     }
 
     /** Create diploma for student with given email who has the given achievement.
-     * @param email
-     * @param achievement
-     * @return
-     */
-    /** Create diploma for student with given email who has the given achievement.
      * @param email Email address of a student that should be in the excel file.
-     * @param achievement Achievement that a student in the excel has.
+     * @param title Title of credential  that a student in the excel has.
      * @return The verifiable diploma created from the source data.
      * @throws DiplomaDataProvider.RequiredDataNotFoundException Some required data was not found for example there is no student with given email.
      * @throws DiplomaDataProvider.ExcelStructureException The structure of the excel file was not what was expected for example there is no column for student email address.
      */
-    public String createDiploma( String email, String achievement ) throws DiplomaDataProvider.RequiredDataNotFoundException, DiplomaDataProvider.ExcelStructureException {
+    public String createDiploma( String email, String title ) throws DiplomaDataProvider.RequiredDataNotFoundException, DiplomaDataProvider.ExcelStructureException {
         var signatory = Signatory.Companion.getService();
         
-        var proofConfig = new ProofConfig(issuerDid, holderDid, null, null, ProofType.LD_PROOF, null, null, null, null, null, null, null, email +DiplomaDataProvider.IDENTITY_SEPARATOR +achievement );
-        var diploma = signatory.issue("VerifiableDiploma", proofConfig, null);
+        var proofConfig = new ProofConfig(issuerDid, holderDid, null, null, ProofType.LD_PROOF, null, null, null, null, null, null, null, null );
+        var diploma = signatory.issue("VerifiableDiploma", proofConfig, new DiplomaDataProvider( credentialData, email, title ));
         return diploma;
     }
 

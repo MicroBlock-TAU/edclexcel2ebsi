@@ -27,17 +27,22 @@ import id.walt.vclib.model.VerifiableCredential;
  */
 public class DiplomaDataProvider implements SignatoryDataProvider {
     
-    // used to separate student email and achievement in the proof config.
-    public final static String IDENTITY_SEPARATOR = "::";
     
     // credential data from xml file
     protected CredentialData data;
     
-    /** Create provider for the given credential data.
+    private String email;
+    private String title;
+    
+    /** Create provider for creating a credential for the given student and credential. 
      * @param data the credential data from which this creates credentials.
+     * @param email email of the student this is used to create a credential for.
+     * @param title Title of the credential from the excel this will create a credential for.
      */
-    public DiplomaDataProvider( CredentialData data ) {
+    public DiplomaDataProvider( CredentialData data, String email, String title ) {
         this.data = data;
+        this.email = email;
+        this.title = title;
     }
     
     /** Create the contents of the verifiable diploma.
@@ -46,10 +51,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     @Override
     public VerifiableCredential populate( VerifiableCredential template, ProofConfig proofConfig ) {
         if (template instanceof VerifiableDiploma) {
-            // get student email and achievement from the proof config and separate them.
-            var identifier = proofConfig.getDataProviderIdentifier().split(IDENTITY_SEPARATOR);
-            var email = identifier[0];
-            var course = identifier[1];
+            var course = title;
             // get excel row containing the student matching the email and achievement.
             XSSFRow personalInfo = data.getPersonalInfo(email, course);
             // get the corresponding credential info

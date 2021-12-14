@@ -14,24 +14,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Map;
 
-/** Tests for diploma data provider and the excel reader classes it uses.
+/** Tests for the excel reader classes.
  * @author Otto Hylli
  *
  */
-class DataProviderTest {
+class CredentialDataTest {
     
-    private DiplomaDataProvider provider = new DiplomaDataProvider(new CredentialData());
+    private CredentialData data = new CredentialData();
     
     /** Test that finds person with email and achievement.
      * 
      */
     @Test void getPersonalInfo() {
         try {
-            var row = provider.data.getPersonalInfo("test3.doe3@test.dat", "Data and software business");
-            provider.data.personsTable.setCurrentRow(row.getRowNum());
-            var achievement = provider.data.personsTable.getCellValueForCurrentRow(PersonsTable.ACHIEVEMENT_COLUMN);
+            var row = data.getPersonalInfo("test3.doe3@test.dat", "Data and software business");
+            data.personsTable.setCurrentRow(row.getRowNum());
+            var achievement = data.personsTable.getCellValueForCurrentRow(PersonsTable.ACHIEVEMENT_COLUMN);
             assertEquals( achievement, "Data and software business");
-            var email = provider.data.personsTable.getCellValueForCurrentRow(PersonsTable.EMAIL_COLUMN);
+            var email = data.personsTable.getCellValueForCurrentRow(PersonsTable.EMAIL_COLUMN);
             assertEquals( email, "test3.doe3@test.dat");
         }
         
@@ -44,14 +44,14 @@ class DataProviderTest {
      * 
      */
     @Test void personalInfoNotFound() {
-        assertThrows(DiplomaDataProvider.RequiredDataNotFoundException.class, () -> provider.data.getPersonalInfo("test3.doe3@test.dat", "Data and software busines"), "Should not find information.");
+        assertThrows(DiplomaDataProvider.RequiredDataNotFoundException.class, () -> data.getPersonalInfo("test3.doe3@test.dat", "Data and software busines"), "Should not find information.");
     }
     
     /** Check that persons sheet has expected column headings.
      * 
      */
     @Test void findPersonsColumns() {
-        var table = new PersonsTable(provider.data.credentialData, provider.data);
+        var table = new PersonsTable(data.credentialData, data);
         var columns = List.of( PersonsTable.EMAIL_COLUMN, PersonsTable.ACHIEVEMENT_COLUMN, PersonsTable.FAMILY_NAME_COLUMN, PersonsTable.GIVEN_NAME_COLUMN  );
         for ( var name : columns ) {
             try {
@@ -72,7 +72,7 @@ class DataProviderTest {
      * 
      */
     @Test void getCellValueString() {
-        var table = new PersonsTable(provider.data.credentialData, provider.data );
+        var table = new PersonsTable(data.credentialData, data );
         final int rowNum = 12;
         table.setCurrentRow(rowNum);
         try {
@@ -93,9 +93,9 @@ class DataProviderTest {
     @Test void getRowWithValues() {
         var email = "test2.dan2@test.dat";
         var achievement = "Data and software business";
-        var rowNum = provider.data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )).getRowNum();
-        assertEquals( provider.data.personsTable.getCellValue(rowNum, PersonsTable.EMAIL_COLUMN ), email );
-        assertEquals( provider.data.personsTable.getCellValue(rowNum, PersonsTable.ACHIEVEMENT_COLUMN ), achievement );
+        var rowNum = data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )).getRowNum();
+        assertEquals( data.personsTable.getCellValue(rowNum, PersonsTable.EMAIL_COLUMN ), email );
+        assertEquals( data.personsTable.getCellValue(rowNum, PersonsTable.ACHIEVEMENT_COLUMN ), achievement );
     }
     
     /** Check that we get correct exception if row with given values is not found.
@@ -104,14 +104,14 @@ class DataProviderTest {
     @Test void rowWithValuesNotFound() {
         var email = "test2.dan2@test.dat";
         var achievement = "Data and software busines";
-        assertThrows( DiplomaDataProvider.RequiredDataNotFoundException.class, () -> provider.data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )));
+        assertThrows( DiplomaDataProvider.RequiredDataNotFoundException.class, () -> data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )));
     }
     
     /** Test that table linking works.
      * 
      */
     @Test void tableLinkTest() {
-        provider.data.credentialsTable.setCurrentRow(13);
-        assertEquals(provider.data.credentialsTable.organisationLink.getLinkedRowForCurrentRow().getRowNum(), 12 );
+        data.credentialsTable.setCurrentRow(13);
+        assertEquals(data.credentialsTable.organisationLink.getLinkedRowForCurrentRow().getRowNum(), 12 );
     }
 }
