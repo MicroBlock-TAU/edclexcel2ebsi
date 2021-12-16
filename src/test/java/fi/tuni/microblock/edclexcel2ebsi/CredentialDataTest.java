@@ -27,12 +27,12 @@ class CredentialDataTest {
      */
     @Test void getPersonalInfo() {
         try {
-            var row = data.getPersonalInfo("test3.doe3@test.dat", "Data and software business");
+            var row = data.getPersonalInfo("jane2.doe2@test.edu", "Data and Software Business");
             data.personsTable.setCurrentRow(row.getRowNum());
             var achievement = data.personsTable.getCellValueForCurrentRow(PersonsTable.ACHIEVEMENT_COLUMN);
-            assertEquals( achievement, "Data and software business");
+            assertEquals( "Data and Software Business", achievement);
             var email = data.personsTable.getCellValueForCurrentRow(PersonsTable.EMAIL_COLUMN);
-            assertEquals( email, "test3.doe3@test.dat");
+            assertEquals( "jane2.doe2@test.edu", email );
         }
         
         catch ( DiplomaDataProvider.RequiredDataNotFoundException e) {
@@ -77,9 +77,9 @@ class CredentialDataTest {
         table.setCurrentRow(rowNum);
         try {
             var email = table.getCellValueForCurrentRow( PersonsTable.EMAIL_COLUMN);
-            assertEquals(email, "test1.doe1@test.dat");
+            assertEquals( "Jane1.doe1@test.edu", email);
             var achievement = table.getCellValueForCurrentRow( PersonsTable.ACHIEVEMENT_COLUMN);
-            assertEquals( achievement, "Data and software business" );
+            assertEquals( "Data and Software Business", achievement );
         }
         
         catch ( DiplomaDataProvider.ExcelStructureException e) {
@@ -91,8 +91,8 @@ class CredentialDataTest {
      * 
      */
     @Test void getRowWithValues() {
-        var email = "test2.dan2@test.dat";
-        var achievement = "Data and software business";
+        var email = "jane2.doe2@test.edu";
+        var achievement = "Data and Software Business";
         var rowNum = data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )).getRowNum();
         assertEquals( data.personsTable.getCellValue(rowNum, PersonsTable.EMAIL_COLUMN ), email );
         assertEquals( data.personsTable.getCellValue(rowNum, PersonsTable.ACHIEVEMENT_COLUMN ), achievement );

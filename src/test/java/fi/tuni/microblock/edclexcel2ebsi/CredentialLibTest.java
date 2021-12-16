@@ -35,7 +35,7 @@ class CredentialLibTest {
      * @return the credential
      */
     private String createTestDiploma() {
-        String diploma = credentials.createDiploma("test2.dan2@test.dat", "Data and software business");
+        String diploma = credentials.createDiploma("jane2.doe2@test.edu", "Data and Software Business");
         assertNotNull(diploma, "app should create a diploma.");
         return diploma;
     }
@@ -47,10 +47,10 @@ class CredentialLibTest {
         String diploma = createTestDiploma(); 
         VerifiableDiploma vc = (VerifiableDiploma)VcLibManager.INSTANCE.getVerifiableCredential(diploma);
         var subject = vc.getCredentialSubject();
-        assertEquals(subject.getFamilyName(), "dan2");
-        assertEquals(subject.getGivenNames(), "test2" );
+        assertEquals(subject.getFamilyName(), "Doe2");
+        assertEquals(subject.getGivenNames(), "Jane2" );
         var achievement = subject.getLearningAchievement();
-        assertEquals(achievement.getTitle(), "Data and software business" );
+        assertEquals(achievement.getTitle(), "Data and Software Business" );
         assertEquals( subject.getAwardingOpportunity().getAwardingBody().getPreferredName(), "Tampere University" );
     }
     
@@ -84,8 +84,8 @@ class CredentialLibTest {
     }
     
     @Test void listCredentialsForStudent() {
-        var email = "test2.dan2@test.dat"; 
-        var expectedAchievements = List.of("Data and software business");
+        var email = "jane2.doe2@test.edu"; 
+        var expectedAchievements = List.of("Data and Software Business");
         var achievements = credentials.listCredentialsForStudent(email);
         assertTrue( achievements.size() == expectedAchievements.size() && expectedAchievements.containsAll(achievements) && achievements.containsAll(expectedAchievements), "expected " +expectedAchievements + " got " +achievements  );
     }

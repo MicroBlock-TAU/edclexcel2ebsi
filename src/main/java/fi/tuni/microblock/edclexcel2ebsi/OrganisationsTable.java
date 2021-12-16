@@ -20,7 +20,7 @@ public class OrganisationsTable extends DataTable {
     protected static final String COMMON_NAME_COLUMN = "Common Name";
     protected static final String LEGAL_IDENTIFIER_COLUMN = "Legal Identifier";
     protected static final String HOMEPAGE_COLUMN = "homepage";
-    protected static final String LOCATION_COLUMN = "Location"; 
+    protected static final String LOCATION_COLUMN = "Location Name"; 
      
     /** Create organisations table for the given workbook.
      * @param data excel workbook

@@ -41,7 +41,8 @@ public class CredentialData {
      */
     public CredentialData() {
         try {
-            OPCPackage pkg = OPCPackage.open(new File("credentials.xlsm"));
+            var fileName = "credentials.xlsm";
+            OPCPackage pkg = OPCPackage.open(new File(fileName));
             credentialData = new XSSFWorkbook(pkg);
             /*for ( var i : credentialData.getAllNames()) {
                 System.out.println(i.getNameName() +" " +i.getRefersToFormula());
