@@ -100,7 +100,8 @@ public class CredentialData {
         var credentials = new ArrayList<String>();
         for ( int row = personsTable.getHeaderRowNum() +1; row <= personsTable.getLastRowNum(); row++ ) {
             if ( email.equals( personsTable.getCellValue(row, PersonsTable.EMAIL_COLUMN))) {
-                credentials.add( personsTable.getCellValue(row, PersonsTable.ACHIEVEMENT_COLUMN ));
+                var title = credentialsTable.getCellValue(row, CredentialsTable.TITLE_COLUMN);
+                credentials.add( title );
             }
         }
         

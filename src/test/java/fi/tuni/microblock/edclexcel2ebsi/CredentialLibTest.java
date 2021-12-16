@@ -85,7 +85,7 @@ class CredentialLibTest {
     
     @Test void listCredentialsForStudent() {
         var email = "jane2.doe2@test.edu"; 
-        var expectedAchievements = List.of("Data and Software Business");
+        var expectedAchievements = List.of("Data and Software Business module");
         var achievements = credentials.listCredentialsForStudent(email);
         assertTrue( achievements.size() == expectedAchievements.size() && expectedAchievements.containsAll(achievements) && achievements.containsAll(expectedAchievements), "expected " +expectedAchievements + " got " +achievements  );
     }
