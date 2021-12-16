@@ -48,4 +48,11 @@ public class PersonsTable extends DataTable {
     public String getGivenName() {
         return getCellValueForCurrentRow( PersonsTable.GIVEN_NAME_COLUMN);
     }
+    
+    /** Get the achievement for the current row.
+     * @return the achievemnet for current row.
+     */
+    public String getAchievement() {
+        return getCellValueForCurrentRow( PersonsTable.ACHIEVEMENT_COLUMN);
+    }
 }

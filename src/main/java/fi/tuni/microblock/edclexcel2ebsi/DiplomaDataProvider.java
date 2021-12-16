@@ -51,11 +51,10 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     @Override
     public VerifiableCredential populate( VerifiableCredential template, ProofConfig proofConfig ) {
         if (template instanceof VerifiableDiploma) {
-            var course = title;
             // get excel row containing the student matching the email and achievement.
-            XSSFRow personalInfo = data.getPersonalInfo(email, course);
-            // get the corresponding credential info
-            var credentialInfo = data.getCredential(personalInfo);
+            XSSFRow credentialInfo = data.getCredential(email, title);
+            // get the corresponding personal info
+            var personalInfo = data.getPerson(credentialInfo);
             data.credentialsTable.setCurrentRow(credentialInfo.getRowNum());
             // get the organisation row the credential row points to
             data.organisationsTable.setCurrentRow( data.credentialsTable.getLinkedOrganisation().getRowNum() );
@@ -72,6 +71,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             subject.setFamilyName(data.personsTable.getFamilyName());
             subject.setGivenNames(data.personsTable.getGivenName());
             
+            var course = data.personsTable.getAchievement();
             var achievement = new VerifiableDiploma.CredentialSubject.LearningAchievement("urn:epass:learningAchievement:1", course, null, null);
             subject.setLearningAchievement(achievement);
             var awardingBody = new VerifiableDiploma.CredentialSubject.AwardingOpportunity.AwardingBody( 

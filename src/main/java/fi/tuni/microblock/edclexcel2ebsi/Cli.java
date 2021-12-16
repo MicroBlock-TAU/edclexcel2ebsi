@@ -48,7 +48,7 @@ public class Cli {
         logger.info("Starting ssikit test.");
         
         try {
-            var diploma = credentials.createDiploma( "test2.dan2@test.dat", "Data and software business" );
+            var diploma = credentials.createDiploma( "jane2.doe2@test.edu", "Data and Software Business module" );
             System.out.println("Diploma:");
             System.out.println(diploma);
             CredentialLib.writeToFile("diploma.json", diploma);

@@ -5,7 +5,9 @@
 */
 package fi.tuni.microblock.edclexcel2ebsi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.CellType;
@@ -76,6 +78,13 @@ public abstract class DataTable {
     public int getLastRowNum() {
         return sheet.getLastRowNum();
     }
+    
+    /** Get the excel sheet for this DataTable.
+     * @return the excel sheet
+     */
+    public XSSFSheet getSheet() {
+        return sheet;
+    }
 
     /** Get the number of the column that has the specified heading.
      * @param name name of a colun heading.
@@ -144,12 +153,25 @@ public abstract class DataTable {
     
     /** Find a row that has the given values for the given coluns.
      * @param values Values for colun headings. Key is a colun heading and value is a value for that colun.
-     * @return The row that has the given values.
-     */
+     * @return The row that has the given values. If there are multiple matches the first row is returned.
+    */
     public XSSFRow getRowWithValues( Map<String, String> values ) throws DiplomaDataProvider.RequiredDataNotFoundException {
-        XSSFRow row = null;
+        var rows = getRowsWithValues(values);
+        if ( rows.size() > 0 ) {
+            return rows.get(0);
+        }
+        
+        throw new DiplomaDataProvider.RequiredDataNotFoundException( sheet.getSheetName() +" cannot find row ro values " +values );
+    }
+    
+    /** Get rows that have the given values.
+     * @param values Map where column heading is the key and value the desired value.
+     * @return Rows that have the values.
+     */
+    public List<XSSFRow> getRowsWithValues( Map<String, String> values ) {
+        List<XSSFRow> rows = new ArrayList<>();
         rowLoop: for ( int i = headerRow.getRowNum() +1; i <= sheet.getLastRowNum(); i++ ) {
-            row = sheet.getRow(i);
+            var row = sheet.getRow(i);
             for ( var valueEntry : values.entrySet()) {
                 var value = getCellValue(i, valueEntry.getKey() );
                 if ( !value.equals(valueEntry.getValue())) {
@@ -157,10 +179,10 @@ public abstract class DataTable {
                 }
             }
             
-            return row;
+            rows.add( row );
         }
         
-        throw new DiplomaDataProvider.RequiredDataNotFoundException( sheet.getSheetName() +" cannot find row ro values " +values );
+        return rows;
     }
     
     /** Reprsents a relationship between two DataTables based on a shared value on a row.

@@ -27,12 +27,11 @@ class CredentialDataTest {
      */
     @Test void getPersonalInfo() {
         try {
-            var row = data.getPersonalInfo("jane2.doe2@test.edu", "Data and Software Business");
-            data.personsTable.setCurrentRow(row.getRowNum());
-            var achievement = data.personsTable.getCellValueForCurrentRow(PersonsTable.ACHIEVEMENT_COLUMN);
-            assertEquals( "Data and Software Business", achievement);
-            var email = data.personsTable.getCellValueForCurrentRow(PersonsTable.EMAIL_COLUMN);
-            assertEquals( "jane2.doe2@test.edu", email );
+            var expectedTitle = "Data and Software Business module";
+            var row = data.getCredential("jane2.doe2@test.edu", expectedTitle );
+            data.credentialsTable.setCurrentRow(row.getRowNum());
+            var title = data.credentialsTable.getCellValueForCurrentRow(CredentialsTable.TITLE_COLUMN);
+            assertEquals( expectedTitle, title);
         }
         
         catch ( DiplomaDataProvider.RequiredDataNotFoundException e) {
@@ -44,7 +43,7 @@ class CredentialDataTest {
      * 
      */
     @Test void personalInfoNotFound() {
-        assertThrows(DiplomaDataProvider.RequiredDataNotFoundException.class, () -> data.getPersonalInfo("test3.doe3@test.dat", "Data and software busines"), "Should not find information.");
+        assertThrows(DiplomaDataProvider.RequiredDataNotFoundException.class, () -> data.getCredential("test3.doe3@test.dat", "Data and Software Business module"), "Should not find information.");
     }
     
     /** Check that persons sheet has expected column headings.

@@ -35,7 +35,7 @@ class CredentialLibTest {
      * @return the credential
      */
     private String createTestDiploma() {
-        String diploma = credentials.createDiploma("jane2.doe2@test.edu", "Data and Software Business");
+        String diploma = credentials.createDiploma("jane2.doe2@test.edu", "Data and Software Business module");
         assertNotNull(diploma, "app should create a diploma.");
         return diploma;
     }

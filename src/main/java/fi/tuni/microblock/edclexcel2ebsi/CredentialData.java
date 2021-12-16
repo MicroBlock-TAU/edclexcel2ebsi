@@ -67,24 +67,33 @@ public class CredentialData {
         }
     }
     
-    /** From the persons sheet get row that has the given email and achievement.
+    /** From the credentials sheet get row that has the given title and is related to the persons row with given email.
      * @param expectedEmail student email
-     * @param expectedAchievement name of an achievement
-     * @return Row having the student with the email and achievement.
+     * @param expectedTitle title of a credential
+     * @return row of the credential sheet which matches the parameters. 
      * @throws ExcelStructureException There is something wrong with the excel.
      * @throws RequiredDataNotFoundException No row with the given email and achievement found.
      */
-    public XSSFRow getPersonalInfo(String expectedEmail, String expectedAchievement ) throws DiplomaDataProvider.ExcelStructureException, DiplomaDataProvider.RequiredDataNotFoundException {
-        var values = Map.of( PersonsTable.EMAIL_COLUMN, expectedEmail, PersonsTable.ACHIEVEMENT_COLUMN, expectedAchievement);
-        return personsTable.getRowWithValues( values );
+    public XSSFRow getCredential(String expectedEmail, String expectedTitle ) throws DiplomaDataProvider.ExcelStructureException, DiplomaDataProvider.RequiredDataNotFoundException {
+        var values = Map.of( CredentialsTable.TITLE_COLUMN, expectedTitle );
+        var credentials =  credentialsTable.getRowsWithValues( values );
+        for ( var credential : credentials ) {
+            var person = getPerson(credential);
+            var email = personsTable.getCellValue(person.getRowNum(), PersonsTable.EMAIL_COLUMN );
+            if ( email.equals(expectedEmail)) {
+                return credential;
+            }
+        }
+        
+        throw new DiplomaDataProvider.RequiredDataNotFoundException( "Credential with title " +expectedTitle + " for student with email " +expectedEmail +" not found.");
     }
     
-    /** Get the credentials sheet row that corresponds to the given persons row.
-     * @param person Row of the persons sheet
+    /** Get the persons sheet row that corresponds to the given credentials row.
+     * @param credential Row of the credentials sheet
      * @return Corresponding row of the credentials sheet.
      */
-    public XSSFRow getCredential(XSSFRow person) {
-        return credentials.getRow(person.getRowNum());
+    public XSSFRow getPerson(XSSFRow credential) {
+        return personsTable.getSheet().getRow(credential.getRowNum());
     }
     
     public List<String> listCredentialsForStudent( String email ) {

@@ -19,6 +19,8 @@ public class CredentialsTable extends DataTable {
     
     // column containing name of organisation that issued the credential
     public static final String ISSUER_COLUMN = "Issuer";
+    // column with credential title
+    public static final String TITLE_COLUMN = "Title"; 
     // relation link to organisations table
     protected DataTable.TableLink organisationLink;
     
