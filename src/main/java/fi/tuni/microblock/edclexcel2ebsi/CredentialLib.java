@@ -114,7 +114,7 @@ public class CredentialLib {
         var signatory = Signatory.Companion.getService();
         
         var proofConfig = new ProofConfig(issuerDid, holderDid, null, null, ProofType.LD_PROOF, null, null, null, null, null, null, null, null );
-        var diploma = signatory.issue("VerifiableDiploma", proofConfig, new DiplomaDataProvider( credentialData, email, title ));
+        var diploma = signatory.issue("VerifiableDiploma", proofConfig, createDataProvider( email, title ));
         return diploma;
     }
 
@@ -191,6 +191,15 @@ public class CredentialLib {
     
     public List<String> listCredentialsForStudent( String email ) {
         return credentialData.listCredentialsForStudent(email);
+    }
+    
+    /** Create a DiplomaDataProvider for creating a credential for the given student for credential with given title.
+     * @param email student email address.
+     * @param title title of a credential
+     * @return diploma data provider for the given parameters.
+     */
+    public DiplomaDataProvider createDataProvider( String email, String title ) {
+        return new DiplomaDataProvider( credentialData, email, title );
     }
     
     /** Helper method used to write contents of given string to a file with given path.
