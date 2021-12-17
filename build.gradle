@@ -12,10 +12,19 @@ plugins {
     id 'application'
     id "org.jetbrains.kotlin.jvm" version "1.5.31"
     id "com.github.mrsarm.jshell.plugin" version "1.1.0"
+    id "maven-publish"
 }
 
 group = "fi.tuni.microblock"
 version = "0.1.0-snapshot"
+
+publishing {
+    publications {
+        edclexcel2ebsi(MavenPublication) {
+            from components.java
+        }
+    }
+}
 
 repositories {
     // Use Maven Central for resolving dependencies.
