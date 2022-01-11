@@ -168,11 +168,7 @@ public class CredentialLib {
             keyService.load(didStr);
         }
         
-        catch (IllegalArgumentException e) {
-            keyService.addAlias( keyId, didStr);
-        }
-        
-        catch ( NullPointerException e ) {
+        catch (Exception e) {
             keyService.addAlias( keyId, didStr);
         }
     }
