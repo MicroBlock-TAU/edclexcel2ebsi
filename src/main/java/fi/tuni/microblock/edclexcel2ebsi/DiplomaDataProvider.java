@@ -64,7 +64,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             diploma.setIssuer(proofConfig.getIssuerDid());
             diploma.setId( "education#higherEducation#" +UUID.randomUUID().toString());
             diploma.setIssuanceDate(getCurrentDate());
-            var subject = new VerifiableDiploma.CredentialSubject();
+            var subject = new VerifiableDiploma.VerifiableDiplomaSubject();
             subject.setId(proofConfig.getSubjectDid());
             subject.setDateOfBirth("2021-02-15");
             data.personsTable.setCurrentRow(personalInfo.getRowNum());
@@ -72,20 +72,20 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             subject.setGivenNames(data.personsTable.getGivenName());
             
             var course = data.personsTable.getAchievement();
-            var achievement = new VerifiableDiploma.CredentialSubject.LearningAchievement("urn:epass:learningAchievement:1", course, null, null);
+            var achievement = new VerifiableDiploma.VerifiableDiplomaSubject.LearningAchievement("urn:epass:learningAchievement:1", course, null, null);
             subject.setLearningAchievement(achievement);
-            var awardingBody = new VerifiableDiploma.CredentialSubject.AwardingOpportunity.AwardingBody( 
+            var awardingBody = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity.AwardingBody( 
                     "id", null, 
                     data.organisationsTable.getLegalIdentifier(), 
                     data.organisationsTable.getCommonName(), 
                     data.organisationsTable.getHomepage() );
-            var awardingOpportunity = new VerifiableDiploma.CredentialSubject.AwardingOpportunity(
+            var awardingOpportunity = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity(
                     "id", 
                     "identifier", 
                     awardingBody, 
                     data.organisationsTable.getLocation(), null, null );
             
-            var specification = new VerifiableDiploma.CredentialSubject.LearningSpecification("urn:epass:qualification:1", new ArrayList<>(), null, null, new ArrayList<>());
+            var specification = new VerifiableDiploma.VerifiableDiplomaSubject.LearningSpecification("urn:epass:qualification:1", new ArrayList<>(), null, null, new ArrayList<>());
             subject.setLearningSpecification(specification);
             subject.setAwardingOpportunity(awardingOpportunity);
             diploma.setCredentialSubject(subject);

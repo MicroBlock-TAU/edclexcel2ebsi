@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Path;
 import java.util.List;
 
-import id.walt.vclib.VcLibManager;
+//import id.walt.vclib.VcLibManager;
+import id.walt.vclib.model.VerifiableCredential;
 import id.walt.vclib.credentials.VerifiableDiploma;
 
 /** Tests for the CredentialLib class.
@@ -44,8 +45,8 @@ class CredentialLibTest {
      * 
      */
     @Test void appCreatesCredential() {
-        String diploma = createTestDiploma(); 
-        VerifiableDiploma vc = (VerifiableDiploma)VcLibManager.INSTANCE.getVerifiableCredential(diploma);
+        String diploma = createTestDiploma();
+        VerifiableDiploma vc = (VerifiableDiploma)VerifiableCredential.Companion.fromString(diploma);
         var subject = vc.getCredentialSubject();
         assertEquals(subject.getFamilyName(), "Doe2");
         assertEquals(subject.getGivenNames(), "Jane2" );
