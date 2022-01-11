@@ -202,6 +202,13 @@ public class CredentialLib {
         return new DiplomaDataProvider( credentialData, email, title );
     }
     
+    /** Get the did of configured issuer.
+     * @return issuer did
+     */
+    public String getIssuerDid() {
+        return issuerDid;
+    }
+    
     /** Helper method used to write contents of given string to a file with given path.
      * @param fileName Name of file.
      * @param content Content to be written to the file.
