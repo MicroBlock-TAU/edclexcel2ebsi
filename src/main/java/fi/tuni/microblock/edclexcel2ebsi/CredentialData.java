@@ -79,7 +79,7 @@ public class CredentialData {
         var credentials =  credentialsTable.getRowsWithValues( values );
         for ( var credential : credentials ) {
             var person = getPerson(credential);
-            var email = personsTable.getCellValue(person.getRowNum(), PersonsTable.EMAIL_COLUMN );
+            var email = personsTable.getCellValueString(person.getRowNum(), PersonsTable.EMAIL_COLUMN );
             if ( email.equals(expectedEmail)) {
                 return credential;
             }
@@ -99,8 +99,8 @@ public class CredentialData {
     public List<String> listCredentialsForStudent( String email ) {
         var credentials = new ArrayList<String>();
         for ( int row = personsTable.getHeaderRowNum() +1; row <= personsTable.getLastRowNum(); row++ ) {
-            if ( email.equals( personsTable.getCellValue(row, PersonsTable.EMAIL_COLUMN))) {
-                var title = credentialsTable.getCellValue(row, CredentialsTable.TITLE_COLUMN);
+            if ( email.equals( personsTable.getCellValueString(row, PersonsTable.EMAIL_COLUMN))) {
+                var title = credentialsTable.getCellValueString(row, CredentialsTable.TITLE_COLUMN);
                 credentials.add( title );
             }
         }

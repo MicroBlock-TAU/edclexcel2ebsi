@@ -6,6 +6,7 @@
 package fi.tuni.microblock.edclexcel2ebsi;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 /** This class is used in getting data from a excel sheet.
  * 
@@ -108,47 +111,91 @@ public abstract class DataTable {
         return columnNum;
     }
     
-    /**
-     * @param row
-     * @param columnHeading
-     * @return
-     * @throws DiplomaDataProvider.ExcelStructureException
-     */
-    /** For the given row get the value for the colun with the given heading name.
+    /** For the given row get the value for the colun with the given heading name as a string.
      * @param row number of row
      * @param columnHeading name of column
      * @return Value of the cell.
      * @throws DiplomaDataProvider.ExcelStructureException There is no colun with the given heading.
      */
-    public String getCellValue( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
-        int column = getColumnNumForHeader(columnHeading);
-        var cell = sheet.getRow(row).getCell(column);
-        if ( cell.getCellType() == CellType.FORMULA ) {
-            if (cell.getCachedFormulaResultType() == CellType.STRING) {
-                return cell.getStringCellValue();
-            }
-            
-            else {
-                throw new DiplomaDataProvider.ExcelStructureException("Cell value " +cell +" at " +cell.getAddress() +" on sheet " +sheet.getSheetName() +" is not a string it is of type " +cell.getCachedFormulaResultType() );
-            }
+    public String getCellValueString( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
+        var value = getCellValue(row, columnHeading, false);
+        try {
+            return (String)value; 
         }
         
-        else if ( cell.getCellType() == CellType.STRING || cell.getCellType() == CellType.BLANK ) {
-            return cell.getStringCellValue();
-        }
-        
-        else {
-            throw new DiplomaDataProvider.ExcelStructureException("Cell value " +cell +" at " +cell.getAddress() +" on sheet " +sheet.getSheetName() +" is not a string it is of type " +cell.getCellType() );
+        catch ( ClassCastException e ) {
+            throw new DiplomaDataProvider.ExcelStructureException( "Value for colun " +columnHeading +" at row " +row +" on sheet " +getSheetName() +" could not be converted to String. Value was " +value +" of type " +value.getClass());
         }
     }
     
-    /** For the current row get cell value for the given heading.
+    /** For the given row get the value for the colun with the given heading name as a date.
+     * @param row number of row
+     * @param columnHeading name of column
+     * @return Value of the cell.
+     * @throws DiplomaDataProvider.ExcelStructureException There is no colun with the given heading or the value cannot be converted into a date.
+     */
+    public Date getCellValueDate( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
+        var value = getCellValue(row, columnHeading, true);        try {
+            return (Date)value; 
+        }
+        
+        catch ( ClassCastException e ) {
+            throw new DiplomaDataProvider.ExcelStructureException( "Value for colun " +columnHeading +" at row " +row +" on sheet " +getSheetName() +" could not be converted to Date. Value was " +value +" of type " +value.getClass());
+        }
+    }
+    
+    /** For the current row get cell value for the given heading as a string.
      * @param columnHeading Colun heading name.
      * @return cell value
      * @throws DiplomaDataProvider.ExcelStructureException no colun with given heading name
      */
-    public String getCellValueForCurrentRow( String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
-        return getCellValue(currentRow, columnHeading);
+    public String getCellValueStringForCurrentRow( String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
+        return getCellValueString(currentRow, columnHeading);
+    }
+    
+    /** For the current row get cell value for the given heading as a date.
+     * @param columnHeading Colun heading name.
+     * @return cell value
+     * @throws DiplomaDataProvider.ExcelStructureException no colun with given heading name or value could not be converted into a date.
+     */
+    public Date getCellValueDateForCurrentRow( String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
+        return getCellValueDate(currentRow, columnHeading);
+    }
+    
+    /** Get the value of the cell on the given row for the given heading.
+     * 
+     * Class of returned object depends on the type of the cell. It can be String, double or Date.
+     * @param row number of the row
+     * @param columnHeading name of the column
+     * @param numericAsDate if the cell type is numeric should it be interpreted as a Date.
+     * @return Value of the cell.
+     */
+    private Object getCellValue( int row, String columnHeading, boolean numericAsDate  ) {
+        int column = getColumnNumForHeader(columnHeading);
+        var cell = sheet.getRow(row).getCell(column);
+        CellType type = cell.getCellType();
+        if ( type == CellType.FORMULA ) {
+            type = cell.getCachedFormulaResultType();          
+        }
+        
+        if ( type == CellType.STRING || type == CellType.BLANK) {
+            return cell.getStringCellValue();
+        }
+        
+        else if ( type == CellType.NUMERIC) {
+            if ( numericAsDate) {
+                return cell.getDateCellValue();
+            }
+            
+            else {
+                return cell.getNumericCellValue();
+            }
+        }
+        
+        else {
+            throw new DiplomaDataProvider.ExcelStructureException("Cell value " +cell +" at " +cell.getAddress() +" on sheet " +sheet.getSheetName() +" has unexpected type of " +cell.getCellType() );
+        }
+        
     }
     
     /** Find a row that has the given values for the given coluns.
@@ -173,7 +220,7 @@ public abstract class DataTable {
         rowLoop: for ( int i = headerRow.getRowNum() +1; i <= sheet.getLastRowNum(); i++ ) {
             var row = sheet.getRow(i);
             for ( var valueEntry : values.entrySet()) {
-                var value = getCellValue(i, valueEntry.getKey() );
+                var value = getCellValueString(i, valueEntry.getKey() );
                 if ( !value.equals(valueEntry.getValue())) {
                     continue rowLoop;
                 }
@@ -202,7 +249,7 @@ public abstract class DataTable {
          * @return Linked row from target table.
          */
         public XSSFRow getLinkedRow( int rowNum ) {
-            var sourceValue = sourceTable.getCellValue(rowNum, sourceHeading);
+            var sourceValue = sourceTable.getCellValueString(rowNum, sourceHeading);
             return targetTable.getRowWithValues( Map.of( targetHeading, sourceValue ));
         }
         

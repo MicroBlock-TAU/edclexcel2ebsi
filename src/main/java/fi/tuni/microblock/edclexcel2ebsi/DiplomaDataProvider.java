@@ -89,6 +89,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             subject.setLearningSpecification(specification);
             subject.setAwardingOpportunity(awardingOpportunity);
             diploma.setCredentialSubject(subject);
+            diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
         }
         
@@ -102,6 +103,15 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         // todo: fix time zone.
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
+    }
+    
+    /** Format the given date into a ISO 8601  UTC date string.
+     * @param date date to be formatted
+     * @return ISO 8601 utc representation of the date.
+     */
+    public String dateToUtcString( Date date ) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return formatter.format(date);
     }
     

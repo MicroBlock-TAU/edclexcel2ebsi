@@ -47,6 +47,7 @@ class CredentialLibTest {
     @Test void appCreatesCredential() {
         String diploma = createTestDiploma();
         VerifiableDiploma vc = (VerifiableDiploma)VerifiableCredential.Companion.fromString(diploma);
+        assertEquals("2021-12-15T00:00:00Z", vc.getValidFrom());
         var subject = vc.getCredentialSubject();
         assertEquals(subject.getFamilyName(), "Doe2");
         assertEquals(subject.getGivenNames(), "Jane2" );

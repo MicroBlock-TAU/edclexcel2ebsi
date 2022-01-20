@@ -44,27 +44,27 @@ public class OrganisationsTable extends DataTable {
      * @return common name
      */
     public String getCommonName() {
-        return getCellValueForCurrentRow(COMMON_NAME_COLUMN);
+        return getCellValueStringForCurrentRow(COMMON_NAME_COLUMN);
     }
     
     /** Get legal identifier of organisation on the current row.
      * @return legal indentifier
      */
     public String getLegalIdentifier() {
-        return getCellValueForCurrentRow( LEGAL_IDENTIFIER_COLUMN);
+        return getCellValueStringForCurrentRow( LEGAL_IDENTIFIER_COLUMN);
     }
     
     /** Get the home page of organisation on the current row.
      * @return home page
      */
     public String getHomepage() {
-        return getCellValueForCurrentRow(HOMEPAGE_COLUMN);
+        return getCellValueStringForCurrentRow(HOMEPAGE_COLUMN);
     }
     
     /** Get the location of the organisation on the current row. 
      * @return location
      */
     public String getLocation() {
-        return getCellValueForCurrentRow(LOCATION_COLUMN);
+        return getCellValueStringForCurrentRow(LOCATION_COLUMN);
     }
 }

@@ -5,6 +5,8 @@
 */
 package fi.tuni.microblock.edclexcel2ebsi;
 
+import java.util.Date;
+
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -20,7 +22,9 @@ public class CredentialsTable extends DataTable {
     // column containing name of organisation that issued the credential
     public static final String ISSUER_COLUMN = "Issuer";
     // column with credential title
-    public static final String TITLE_COLUMN = "Title"; 
+    public static final String TITLE_COLUMN = "Title";
+    // column with valid from date.
+    public static final String VALID_FROM_COLUMN  = "Valid from";  
     // relation link to organisations table
     protected DataTable.TableLink organisationLink;
     
@@ -48,5 +52,12 @@ public class CredentialsTable extends DataTable {
      */
     public XSSFRow getLinkedOrganisation() {
         return organisationLink.getLinkedRow(getCurrentRow());
+    }
+    
+    /** Get the valid from date of the credential
+     * @return valid from date
+     */
+    public Date getValidFrom() {
+        return getCellValueDateForCurrentRow(VALID_FROM_COLUMN);
     }
 }

@@ -39,20 +39,20 @@ public class PersonsTable extends DataTable {
      * @return family name for current row.
      */
     public String getFamilyName() {
-        return getCellValueForCurrentRow( PersonsTable.FAMILY_NAME_COLUMN);
+        return getCellValueStringForCurrentRow( PersonsTable.FAMILY_NAME_COLUMN);
     }
     
     /** Get given name for person on current row.
      * @return given name on current row.
      */
     public String getGivenName() {
-        return getCellValueForCurrentRow( PersonsTable.GIVEN_NAME_COLUMN);
+        return getCellValueStringForCurrentRow( PersonsTable.GIVEN_NAME_COLUMN);
     }
     
     /** Get the achievement for the current row.
      * @return the achievemnet for current row.
      */
     public String getAchievement() {
-        return getCellValueForCurrentRow( PersonsTable.ACHIEVEMENT_COLUMN);
+        return getCellValueStringForCurrentRow( PersonsTable.ACHIEVEMENT_COLUMN);
     }
 }

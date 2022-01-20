@@ -30,7 +30,7 @@ class CredentialDataTest {
             var expectedTitle = "Data and Software Business module";
             var row = data.getCredential("jane2.doe2@test.edu", expectedTitle );
             data.credentialsTable.setCurrentRow(row.getRowNum());
-            var title = data.credentialsTable.getCellValueForCurrentRow(CredentialsTable.TITLE_COLUMN);
+            var title = data.credentialsTable.getCellValueStringForCurrentRow(CredentialsTable.TITLE_COLUMN);
             assertEquals( expectedTitle, title);
         }
         
@@ -75,9 +75,9 @@ class CredentialDataTest {
         final int rowNum = 12;
         table.setCurrentRow(rowNum);
         try {
-            var email = table.getCellValueForCurrentRow( PersonsTable.EMAIL_COLUMN);
+            var email = table.getCellValueStringForCurrentRow( PersonsTable.EMAIL_COLUMN);
             assertEquals( "Jane1.doe1@test.edu", email);
-            var achievement = table.getCellValueForCurrentRow( PersonsTable.ACHIEVEMENT_COLUMN);
+            var achievement = table.getCellValueStringForCurrentRow( PersonsTable.ACHIEVEMENT_COLUMN);
             assertEquals( "Data and Software Business", achievement );
         }
         
@@ -93,8 +93,8 @@ class CredentialDataTest {
         var email = "jane2.doe2@test.edu";
         var achievement = "Data and Software Business";
         var rowNum = data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )).getRowNum();
-        assertEquals( data.personsTable.getCellValue(rowNum, PersonsTable.EMAIL_COLUMN ), email );
-        assertEquals( data.personsTable.getCellValue(rowNum, PersonsTable.ACHIEVEMENT_COLUMN ), achievement );
+        assertEquals( data.personsTable.getCellValueString(rowNum, PersonsTable.EMAIL_COLUMN ), email );
+        assertEquals( data.personsTable.getCellValueString(rowNum, PersonsTable.ACHIEVEMENT_COLUMN ), achievement );
     }
     
     /** Check that we get correct exception if row with given values is not found.
