@@ -8,6 +8,7 @@ package fi.tuni.microblock.edclexcel2ebsi;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.CellType;
@@ -19,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import id.walt.signatory.ProofConfig;
 import id.walt.signatory.SignatoryDataProvider;
 import id.walt.vclib.credentials.VerifiableDiploma;
+import id.walt.vclib.credentials.Europass;
 import id.walt.vclib.model.VerifiableCredential;
 
 /** A custom data provider to be used with ssikit for getting diploma contents from the EDCL excel file.
@@ -50,30 +52,31 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
      */
     @Override
     public VerifiableCredential populate( VerifiableCredential template, ProofConfig proofConfig ) {
-        if (template instanceof VerifiableDiploma) {
+        if (template instanceof Europass) {
             // get excel row containing the student matching the email and achievement.
             XSSFRow credentialInfo = data.getCredential(email, title);
             // get the corresponding personal info
             var personalInfo = data.getPerson(credentialInfo);
+            printRow(personalInfo);
             data.credentialsTable.setCurrentRow(credentialInfo.getRowNum());
             // get the organisation row the credential row points to
             data.organisationsTable.setCurrentRow( data.credentialsTable.getLinkedOrganisation().getRowNum() );
-            //printRow(credentialInfo);
             
-            VerifiableDiploma diploma = (VerifiableDiploma)template;
+            Europass diploma = (Europass)template;
             diploma.setIssuer(proofConfig.getIssuerDid());
             diploma.setId( "education#higherEducation#" +UUID.randomUUID().toString());
             diploma.setIssuanceDate(getCurrentDate());
-            var subject = new VerifiableDiploma.VerifiableDiplomaSubject();
+            var subject = new Europass.EuropassSubject();
             subject.setId(proofConfig.getSubjectDid());
-            subject.setDateOfBirth("2021-02-15");
+            //subject.setDateOfBirth("2021-02-15");
             data.personsTable.setCurrentRow(personalInfo.getRowNum());
-            subject.setFamilyName(data.personsTable.getFamilyName());
-            subject.setGivenNames(data.personsTable.getGivenName());
+            //subject.setFamilyName(data.personsTable.getFamilyName());
+            //subject.setGivenNames(data.personsTable.getGivenName());
             
             var course = data.personsTable.getAchievement();
-            var achievement = new VerifiableDiploma.VerifiableDiplomaSubject.LearningAchievement("urn:epass:learningAchievement:1", course, null, null);
-            subject.setLearningAchievement(achievement);
+            /*var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, null, null, null, null );
+            subject.setAchieved(List.of(achievement));
+            //subject.setLearningAchievement(achievement);
             var awardingBody = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity.AwardingBody( 
                     "id", null, 
                     data.organisationsTable.getLegalIdentifier(), 
@@ -89,7 +92,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             subject.setLearningSpecification(specification);
             subject.setAwardingOpportunity(awardingOpportunity);
             diploma.setCredentialSubject(subject);
-            diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
+            diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));*/
             return diploma;
         }
         

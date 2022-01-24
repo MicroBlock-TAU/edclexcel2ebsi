@@ -1,6 +1,6 @@
 /* Copyright 2021 Tampere University
- * This software was developed as a part of the MicroBlock project: https://www.tuni.fi/en/research/microblock-advancing-exchange-micro-credentials-ebsi
  * This source code is licensed under the MIT license. See LICENSE in the repository root directory.
+ * This software was developed as a part of the MicroBlock project: https://www.tuni.fi/en/research/microblock-advancing-exchange-micro-credentials-ebsi
  * Author(s): Otto Hylli <otto.hylli@tuni.fi>
 */
 package fi.tuni.microblock.edclexcel2ebsi;

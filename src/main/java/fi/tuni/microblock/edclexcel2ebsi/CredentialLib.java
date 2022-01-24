@@ -114,7 +114,7 @@ public class CredentialLib {
         var signatory = Signatory.Companion.getService();
         
         var proofConfig = new ProofConfig(issuerDid, holderDid, null, null, ProofType.LD_PROOF, null, null, null, null, null, null, null, null );
-        var diploma = signatory.issue("VerifiableDiploma", proofConfig, createDataProvider( email, title ));
+        var diploma = signatory.issue("Europass", proofConfig, createDataProvider( email, title ));
         return diploma;
     }
 
