@@ -133,4 +133,15 @@ class CredentialDataTest {
         Map<String, Double> expected = Map.of( "Individual assignment1", 3.0, "Individual assignment2", 5.0, "Project assignment", 4.0, "Overall grade", 4.0 );
         assertEquals( expected, grades );
     }
+    
+    /** Test we can get learning activity by title.
+     * 
+     */
+    @Test void getLearningActivity() {
+        var title = "Course exercise";
+        var row = data.activitiesTable.getRowForActivity(title);
+        data.activitiesTable.setCurrentRow(row);
+        assertEquals( title, data.activitiesTable.getTitle());
+        assertNotNull( data.activitiesTable.getDescription());
+    }
 }
