@@ -113,4 +113,24 @@ class CredentialDataTest {
         data.credentialsTable.setCurrentRow(13);
         assertEquals(data.credentialsTable.organisationLink.getLinkedRowForCurrentRow().getRowNum(), 12 );
     }
+    
+    /** Test that we can get learning activities for a person.
+     * 
+     */
+    @Test void getLearningActivities() {
+        data.personsTable.setCurrentRow(13);
+        var activities = data.personsTable.getLearningActivities();
+        var expected = List.of("Individual exercise", "Course exercise", "Zoom lectures");
+        assertEquals(expected, activities);
+    }
+    
+    /** Test that we can get assesments and their grades for a person.
+     * 
+     */
+    @Test void getGrades() {
+        data.personsTable.setCurrentRow(13);
+        var grades = data.personsTable.getAssesments();
+        Map<String, Double> expected = Map.of( "Individual assignment1", 3.0, "Individual assignment2", 5.0, "Project assignment", 4.0, "Overall grade", 4.0 );
+        assertEquals( expected, grades );
+    }
 }
