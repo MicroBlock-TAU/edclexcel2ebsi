@@ -144,4 +144,27 @@ class CredentialDataTest {
         assertEquals( title, data.activitiesTable.getTitle());
         assertNotNull( data.activitiesTable.getDescription());
     }
+    
+    /** Test we can find assessment by title and that it has no subassessments.
+     * 
+     */
+    @Test void getAssessmentWithNoSubAssessments() {
+        var title = "Individual assignment1";
+        var row = data.assessmentsTable.getRowForAssessment(title);
+        data.assessmentsTable.setCurrentRow(row);
+        assertEquals( title, data.assessmentsTable.getTitle());
+        assertTrue( data.assessmentsTable.getSubAssessments().isEmpty());
+    }
+    
+    /** Test we can get assessment with given title and that it has the expected subassessments.
+     * 
+     */
+    @Test void getAssessmentWithSubAssessments() {
+        var title = "Overall grade";
+        var row = data.assessmentsTable.getRowForAssessment(title);
+        data.assessmentsTable.setCurrentRow(row);
+        assertEquals( title, data.assessmentsTable.getTitle());
+        List<String> expected = List.of("Individual assignment1", "Individual assignment2", "Project assignment");
+        assertEquals( expected, data.assessmentsTable.getSubAssessments());
+    }
 }
