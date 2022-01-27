@@ -60,15 +60,6 @@ public class AssessmentsTable extends DataTable {
      * @return List of subassessment names. An empty list if there are no subassessments.
      */
     public List<String> getSubAssessments() {
-        List<String> subAssessments = new ArrayList<>();
-        String subAssessmentsStr = getCellValueStringForCurrentRow(SUB_ASSESSMENTS_COLUMN);
-        if ( subAssessmentsStr.length() == 0 ) {
-            return subAssessments;
-        }
-        
-        for ( String subAssessment : subAssessmentsStr.split(";")) {
-            subAssessments.add( subAssessment.strip());
-        }
-        return subAssessments;
+           return getCellMultiValueStringForCurrentRow( SUB_ASSESSMENTS_COLUMN);
     }
 }

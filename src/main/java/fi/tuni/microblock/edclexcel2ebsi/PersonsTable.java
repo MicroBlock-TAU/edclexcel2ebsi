@@ -68,14 +68,7 @@ public class PersonsTable extends DataTable {
      * @return List of learning activity names.
      */
     public List<String> getLearningActivities() {
-        String activitiesStr = getCellValueStringForCurrentRow(LEARNING_ACTIVITIES_COLUMN);
-        var activities = activitiesStr.split(";");
-        var activitiesList = new ArrayList<String>();
-        for ( var activity : activities ) {
-            activitiesList.add(activity.strip());
-        }
-        
-        return activitiesList;
+        return getCellMultiValueStringForCurrentRow( LEARNING_ACTIVITIES_COLUMN);
     }
     
     /** Get assesments and their grades for the current row.

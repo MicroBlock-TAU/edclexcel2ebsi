@@ -232,6 +232,23 @@ public abstract class DataTable {
         return rows;
     }
     
+    /** Get a cell value consisting of multiple parts separated by ; and split it to its components on the current row. 
+     * @param columnName Name of the column under which the value is.
+     * @return Value separated to its parts.
+     */
+    public List<String> getCellMultiValueStringForCurrentRow( String columnName) {
+        List<String> values = new ArrayList<>();
+        String valueStr = getCellValueStringForCurrentRow(columnName);
+        if ( valueStr.length() == 0 ) {
+            return values;
+        }
+        
+        for ( String value : valueStr.split(";")) {
+            values.add( value.strip());
+        }
+        return values;
+    }
+    
     /** Reprsents a relationship between two DataTables based on a shared value on a row.
      * 
      * For example credentials and organisations are linked to each other by the name of the organisation which is under issuer in the credentials table and legal name in the organisations table.
