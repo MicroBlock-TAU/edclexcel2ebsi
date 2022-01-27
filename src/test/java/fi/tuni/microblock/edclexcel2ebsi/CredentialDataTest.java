@@ -167,4 +167,17 @@ class CredentialDataTest {
         List<String> expected = List.of("Individual assignment1", "Individual assignment2", "Project assignment");
         assertEquals( expected, data.assessmentsTable.getSubAssessments());
     }
+    
+    /** Test we get achievement by title and its assesment and activities.
+     * 
+     */
+    @Test void getAchievement() {
+        String title = "Data and Software Business";
+        int row = data.achievementsTable.getRowForAchievement(title);
+        data.achievementsTable.setCurrentRow(row);
+        assertEquals( title, data.achievementsTable.getTitle());
+        assertEquals( "Overall grade", data.achievementsTable.getAssessment());
+        List<String> expectedActivities = List.of("Individual exercise", "course exercise", "zoom lectures" );
+        assertEquals( expectedActivities, data.achievementsTable.getActivities());
+    }
 }
