@@ -180,4 +180,17 @@ class CredentialDataTest {
         List<String> expectedActivities = List.of("Individual exercise", "course exercise", "zoom lectures" );
         assertEquals( expectedActivities, data.achievementsTable.getActivities());
     }
+    
+    /** Test we can find learning outcome by title and get its skills.
+     * 
+     */
+    @Test void getLearningOutcome() {
+        String title = "Collaboratively develop a data or software concept";
+        int row = data.outcomesTable.getRowForLearningOutcome(title);
+        data.outcomesTable.setCurrentRow(row);
+        assertEquals( title, data.outcomesTable.getTitle());
+        assertNotNull( data.outcomesTable.getDescription());
+        List<String> expectedSkills = List.of("http://data.europa.eu/esco/skill/60c78287-22eb-4103-9c8c-28deaa460da1", "http://data.europa.eu/esco/skill/09e28145-e205-4b7a-8b3b-5c4876396069", "http://data.europa.eu/esco/skill/27ed854c-15b8-4ba2-90e9-ae888a219704" );
+        assertEquals( expectedSkills, data.outcomesTable.getEscoSkills());
+    }
 }
