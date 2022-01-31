@@ -57,7 +57,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             XSSFRow credentialInfo = data.getCredential(email, title);
             // get the corresponding personal info
             var personalInfo = data.getPerson(credentialInfo);
-            printRow(personalInfo);
+            //printRow(personalInfo);
             data.credentialsTable.setCurrentRow(credentialInfo.getRowNum());
             // get the organisation row the credential row points to
             data.organisationsTable.setCurrentRow( data.credentialsTable.getLinkedOrganisation().getRowNum() );
@@ -67,17 +67,17 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             diploma.setId( "education#higherEducation#" +UUID.randomUUID().toString());
             diploma.setIssuanceDate(getCurrentDate());
             var subject = new Europass.EuropassSubject();
+            diploma.setCredentialSubject(subject);
             subject.setId(proofConfig.getSubjectDid());
-            //subject.setDateOfBirth("2021-02-15");
             data.personsTable.setCurrentRow(personalInfo.getRowNum());
-            //subject.setFamilyName(data.personsTable.getFamilyName());
-            //subject.setGivenNames(data.personsTable.getGivenName());
             
             var course = data.personsTable.getAchievement();
-            /*var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, null, null, null, null );
+            data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
+            String assessment = data.achievementsTable.getAssessment();
+            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), "date", null); 
+            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), null, wasAwardedBy, null, null, List.of() );
             subject.setAchieved(List.of(achievement));
-            //subject.setLearningAchievement(achievement);
-            var awardingBody = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity.AwardingBody( 
+            /*var awardingBody = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity.AwardingBody( 
                     "id", null, 
                     data.organisationsTable.getLegalIdentifier(), 
                     data.organisationsTable.getCommonName(), 
@@ -91,12 +91,17 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var specification = new VerifiableDiploma.VerifiableDiplomaSubject.LearningSpecification("urn:epass:qualification:1", new ArrayList<>(), null, null, new ArrayList<>());
             subject.setLearningSpecification(specification);
             subject.setAwardingOpportunity(awardingOpportunity);
-            diploma.setCredentialSubject(subject);
-            diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));*/
+            diploma.setCredentialSubject(subject);*/
+            diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
         }
         
         throw new IllegalArgumentException("Only diploma is supported.");
+    }
+    
+    private Europass.EuropassSubject.Achieved.WasDerivedFrom createAssessment( String assessmentName ) {
+        Double grade = data.personsTable.getAssesments().get(assessmentName);
+        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, null);
     }
     
     /** Get current state as string.

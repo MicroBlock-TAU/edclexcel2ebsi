@@ -126,7 +126,7 @@ public class CredentialLib {
      */
     public String createPresentation( String diploma) {
         var custodian = Custodian.Companion.getService();
-        var diplomaVp = custodian.createPresentation(List.of(diploma), holderDid, null, null, null);
+        var diplomaVp = custodian.createPresentation(List.of(diploma), holderDid, null, null, null, null);
         return diplomaVp;
     }
     

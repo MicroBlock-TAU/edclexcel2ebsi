@@ -113,4 +113,84 @@ class CredentialDataTest {
         data.credentialsTable.setCurrentRow(13);
         assertEquals(data.credentialsTable.organisationLink.getLinkedRowForCurrentRow().getRowNum(), 12 );
     }
+    
+    /** Test that we can get learning activities for a person.
+     * 
+     */
+    @Test void getLearningActivities() {
+        data.personsTable.setCurrentRow(13);
+        var activities = data.personsTable.getLearningActivities();
+        var expected = List.of("Individual exercise", "Course exercise", "Zoom lectures");
+        assertEquals(expected, activities);
+    }
+    
+    /** Test that we can get assesments and their grades for a person.
+     * 
+     */
+    @Test void getGrades() {
+        data.personsTable.setCurrentRow(13);
+        var grades = data.personsTable.getAssesments();
+        Map<String, Double> expected = Map.of( "Individual assignment1", 3.0, "Individual assignment2", 5.0, "Project assignment", 4.0, "Overall grade", 4.0 );
+        assertEquals( expected, grades );
+    }
+    
+    /** Test we can get learning activity by title.
+     * 
+     */
+    @Test void getLearningActivity() {
+        var title = "Course exercise";
+        var row = data.activitiesTable.getRowForActivity(title);
+        data.activitiesTable.setCurrentRow(row);
+        assertEquals( title, data.activitiesTable.getTitle());
+        assertNotNull( data.activitiesTable.getDescription());
+    }
+    
+    /** Test we can find assessment by title and that it has no subassessments.
+     * 
+     */
+    @Test void getAssessmentWithNoSubAssessments() {
+        var title = "Individual assignment1";
+        var row = data.assessmentsTable.getRowForAssessment(title);
+        data.assessmentsTable.setCurrentRow(row);
+        assertEquals( title, data.assessmentsTable.getTitle());
+        assertTrue( data.assessmentsTable.getSubAssessments().isEmpty());
+    }
+    
+    /** Test we can get assessment with given title and that it has the expected subassessments.
+     * 
+     */
+    @Test void getAssessmentWithSubAssessments() {
+        var title = "Overall grade";
+        var row = data.assessmentsTable.getRowForAssessment(title);
+        data.assessmentsTable.setCurrentRow(row);
+        assertEquals( title, data.assessmentsTable.getTitle());
+        List<String> expected = List.of("Individual assignment1", "Individual assignment2", "Project assignment");
+        assertEquals( expected, data.assessmentsTable.getSubAssessments());
+    }
+    
+    /** Test we get achievement by title and its assesment and activities.
+     * 
+     */
+    @Test void getAchievement() {
+        String title = "Data and Software Business";
+        int row = data.achievementsTable.getRowForAchievement(title);
+        data.achievementsTable.setCurrentRow(row);
+        assertEquals( title, data.achievementsTable.getTitle());
+        assertEquals( "Overall grade", data.achievementsTable.getAssessment());
+        List<String> expectedActivities = List.of("Individual exercise", "course exercise", "zoom lectures" );
+        assertEquals( expectedActivities, data.achievementsTable.getActivities());
+    }
+    
+    /** Test we can find learning outcome by title and get its skills.
+     * 
+     */
+    @Test void getLearningOutcome() {
+        String title = "Collaboratively develop a data or software concept";
+        int row = data.outcomesTable.getRowForLearningOutcome(title);
+        data.outcomesTable.setCurrentRow(row);
+        assertEquals( title, data.outcomesTable.getTitle());
+        assertNotNull( data.outcomesTable.getDescription());
+        List<String> expectedSkills = List.of("http://data.europa.eu/esco/skill/60c78287-22eb-4103-9c8c-28deaa460da1", "http://data.europa.eu/esco/skill/09e28145-e205-4b7a-8b3b-5c4876396069", "http://data.europa.eu/esco/skill/27ed854c-15b8-4ba2-90e9-ae888a219704" );
+        assertEquals( expectedSkills, data.outcomesTable.getEscoSkills());
+    }
 }

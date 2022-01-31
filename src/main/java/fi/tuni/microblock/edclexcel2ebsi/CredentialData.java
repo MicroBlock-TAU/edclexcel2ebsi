@@ -35,6 +35,10 @@ public class CredentialData {
     protected CredentialsTable credentialsTable;
     protected OrganisationsTable organisationsTable;
     protected XSSFSheet credentials;
+    protected ActivitiesTable activitiesTable;
+    protected AssessmentsTable assessmentsTable;
+    protected AchievementsTable achievementsTable;
+    protected LearningOutcomesTable outcomesTable;
     
     /** Create from the default credentials.xlsm file.
      * 
@@ -52,6 +56,10 @@ public class CredentialData {
             credentials = credentialData.getSheet("Europass Credentials");
             organisationsTable = new OrganisationsTable( credentialData, this );
             credentialsTable = new CredentialsTable( credentialData, this );
+            activitiesTable = new ActivitiesTable( credentialData, this );
+            assessmentsTable = new AssessmentsTable( credentialData, this );
+            achievementsTable = new AchievementsTable ( credentialData, this );
+            outcomesTable = new LearningOutcomesTable ( credentialData, this );
             
             /*for ( var sheet : credentialData ) {
                 System.out.println( sheet.getSheetName() );

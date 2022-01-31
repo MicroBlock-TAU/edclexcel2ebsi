@@ -14,6 +14,7 @@ import java.util.List;
 
 //import id.walt.vclib.VcLibManager;
 import id.walt.vclib.model.VerifiableCredential;
+import id.walt.vclib.credentials.Europass;
 import id.walt.vclib.credentials.VerifiableDiploma;
 
 /** Tests for the CredentialLib class.
@@ -46,14 +47,14 @@ class CredentialLibTest {
      */
     @Test void appCreatesCredential() {
         String diploma = createTestDiploma();
-        VerifiableDiploma vc = (VerifiableDiploma)VerifiableCredential.Companion.fromString(diploma);
+        Europass vc = (Europass)VerifiableCredential.Companion.fromString(diploma);
         assertEquals("2021-12-15T00:00:00Z", vc.getValidFrom());
         var subject = vc.getCredentialSubject();
-        assertEquals(subject.getFamilyName(), "Doe2");
-        assertEquals(subject.getGivenNames(), "Jane2" );
-        var achievement = subject.getLearningAchievement();
+        var achievement = subject.getAchieved().get(0);
         assertEquals(achievement.getTitle(), "Data and Software Business" );
-        assertEquals( subject.getAwardingOpportunity().getAwardingBody().getPreferredName(), "Tampere University" );
+        var assessment = achievement.getWasDerivedFrom().get(0);
+        assertEquals( "Overall grade", assessment.getTitle());
+        assertEquals( "4.0", assessment.getGrade());
     }
     
     /** Check that verification of diploma succeeds.
