@@ -77,21 +77,6 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), "date", null); 
             var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), null, wasAwardedBy, null, null, List.of() );
             subject.setAchieved(List.of(achievement));
-            /*var awardingBody = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity.AwardingBody( 
-                    "id", null, 
-                    data.organisationsTable.getLegalIdentifier(), 
-                    data.organisationsTable.getCommonName(), 
-                    data.organisationsTable.getHomepage() );
-            var awardingOpportunity = new VerifiableDiploma.VerifiableDiplomaSubject.AwardingOpportunity(
-                    "id", 
-                    "identifier", 
-                    awardingBody, 
-                    data.organisationsTable.getLocation(), null, null );
-            
-            var specification = new VerifiableDiploma.VerifiableDiplomaSubject.LearningSpecification("urn:epass:qualification:1", new ArrayList<>(), null, null, new ArrayList<>());
-            subject.setLearningSpecification(specification);
-            subject.setAwardingOpportunity(awardingOpportunity);
-            diploma.setCredentialSubject(subject);*/
             diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
         }
@@ -101,7 +86,15 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     
     private Europass.EuropassSubject.Achieved.WasDerivedFrom createAssessment( String assessmentName ) {
         Double grade = data.personsTable.getAssesments().get(assessmentName);
-        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, null);
+        data.assessmentsTable.setCurrentRow( data.assessmentsTable.getRowForAssessment(assessmentName));
+        var specificationTitle = data.assessmentsTable.getSpecificationTitle();
+        var gradingSchemeId = data.assessmentsTable.getGradingSchemeIdentifier();
+        Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme grading = null;
+        if ( gradingSchemeId != null && !gradingSchemeId .isEmpty()) {
+            grading = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme(gradingSchemeId , null, null);
+        }
+        var specification = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy("id", specificationTitle, grading);
+        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, specification );
     }
     
     /** Get current state as string.
