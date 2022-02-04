@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 //import id.walt.vclib.VcLibManager;
 import id.walt.vclib.model.VerifiableCredential;
@@ -55,6 +56,13 @@ class CredentialLibTest {
         var assessment = achievement.getWasDerivedFrom().get(0);
         assertEquals( "Overall grade", assessment.getTitle());
         assertEquals( "4.0", assessment.getGrade());
+        var subAssessments = assessment.getHasPart();
+        Map<String, String> expectedGrades = Map.of( "Individual assignment1", "3.0", "Individual assignment2", "5.0", "Project assignment", "4.0" );
+        assertEquals( expectedGrades.keySet().size(), subAssessments.size());
+        for ( var subAssessment : subAssessments ) {
+            assertTrue( expectedGrades.containsKey(subAssessment.getTitle()));
+            assertEquals( expectedGrades.get(subAssessment.getTitle()), subAssessment.getGrade());
+        }
     }
     
     /** Check that verification of diploma succeeds.

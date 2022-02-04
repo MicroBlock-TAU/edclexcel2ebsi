@@ -74,8 +74,8 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var course = data.personsTable.getAchievement();
             data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
             String assessment = data.achievementsTable.getAssessment();
-            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), "date", null); 
-            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), null, wasAwardedBy, null, null, List.of() );
+            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), null, null); 
+            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), null, wasAwardedBy, null, null, null );
             subject.setAchieved(List.of(achievement));
             diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
@@ -94,7 +94,16 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             grading = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme(gradingSchemeId , null, null);
         }
         var specification = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy("id", specificationTitle, grading);
-        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, specification );
+        var subAssessmentNames = data.assessmentsTable.getSubAssessments();
+        List<Europass.EuropassSubject.Achieved.WasDerivedFrom> subAssessments = null;
+        if ( !subAssessmentNames.isEmpty()) {
+            subAssessments = new ArrayList<>();
+            for ( String subAssessment : subAssessmentNames ) {
+                subAssessments.add(createAssessment(subAssessment));
+            }
+        }
+        
+        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, subAssessments, specification );
     }
     
     /** Get current state as string.
