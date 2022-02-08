@@ -168,7 +168,7 @@ class CredentialDataTest {
         assertEquals( expected, data.assessmentsTable.getSubAssessments());
     }
     
-    /** Test we get achievement by title and its assesment and activities.
+    /** Test we get achievement by title and its assesment, learning outcomes and activities.
      * 
      */
     @Test void getAchievement() {
@@ -179,6 +179,9 @@ class CredentialDataTest {
         assertEquals( "Overall grade", data.achievementsTable.getAssessment());
         List<String> expectedActivities = List.of("Individual exercise", "course exercise", "zoom lectures" );
         assertEquals( expectedActivities, data.achievementsTable.getActivities());
+        assertEquals( "Data and Software Business", data.achievementsTable.getSpecificationTitle());
+        List<String> expectedOutcomes = List.of( "Basics of Data and software business", "Monetizing Data and Software Business", "Collaboratively develop a data or software concept" );
+        assertEquals( expectedOutcomes, data.achievementsTable.getLearningOutcomes());
     }
     
     /** Test we can find learning outcome by title and get its skills.

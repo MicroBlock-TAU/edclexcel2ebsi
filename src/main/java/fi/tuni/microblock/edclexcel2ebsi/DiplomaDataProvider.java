@@ -106,6 +106,10 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, subAssessments, specification );
     }
     
+    private Europass.EuropassSubject.Achieved.SpecifiedBy createLearningSpecification() {
+        return null;
+    }
+    
     /** Get current state as string.
      * @return Current date.
      */
