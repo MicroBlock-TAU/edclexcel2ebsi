@@ -221,7 +221,7 @@ public abstract class DataTable {
             var row = sheet.getRow(i);
             for ( var valueEntry : values.entrySet()) {
                 var value = getCellValueString(i, valueEntry.getKey() );
-                if ( !value.equals(valueEntry.getValue())) {
+                if ( !value.toLowerCase().equals(valueEntry.getValue().toLowerCase())) {
                     continue rowLoop;
                 }
             }

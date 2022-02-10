@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -211,7 +212,7 @@ public class CredentialLib {
      * @throws IOException Issue in writing to the file.
      */
     public static void writeToFile( String fileName, String content ) throws IOException {
-        try ( BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        try ( BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, StandardCharsets.UTF_8))) {
             writer.write(content);
         }
     }
@@ -223,6 +224,6 @@ public class CredentialLib {
      */
     public static String readStringFromFile(String fileName) throws IOException {
         var path = Path.of(fileName);
-        return Files.readString(path);
+        return Files.readString(path, StandardCharsets.UTF_8);
     }
 }

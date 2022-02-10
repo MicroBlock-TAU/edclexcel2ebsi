@@ -19,6 +19,10 @@ public class ActivitiesTable extends DataTable {
     // column heading names
     public final static String TITLE_COLUMN = "Title";
     public final static String DESCRIPTION_COLUMN = "Description";
+    public static final String SPECIFICATION_TITLE_COLUMN  = "Specification Title";
+    public static final String SPECIFICATION_TYPE_COLUMN  = "Learning Activity Type";
+    public static final String SPECIFICATION_DESCRIPTIONCOLUMN  = "Specification Description";
+    public static final String MODE_OF_LEARNING_COLUMN = "Mode of Learning";
     
     /** Create a ActivitiesTable.
      * @param data excel workbook containing the activities sheet.
@@ -43,6 +47,34 @@ public class ActivitiesTable extends DataTable {
      */
     public String getTitle() {
         return getCellValueStringForCurrentRow(TITLE_COLUMN);
+    }
+    
+    /** Title for the activity specification on the current row.
+     * @return activity specification title
+     */
+    public String getSpecificationTitle() {
+        return getCellValueStringForCurrentRow(SPECIFICATION_TITLE_COLUMN);
+    }
+    
+    /** description of learning activity specification for the activity specification on the current row.
+     * @return learning activity specification description
+     */
+    public String getSpecificationDescription() {
+        return getCellValueStringForCurrentRow(SPECIFICATION_DESCRIPTIONCOLUMN);
+    }
+    
+    /** Learning activity type for the activity specification on the current row.
+     * @return learning activity type
+     */
+    public String getActivityType() {
+        return getCellValueStringForCurrentRow(SPECIFICATION_TYPE_COLUMN);
+    }
+    
+    /** Mode of learning for the activity specification on the current row.
+     * @return mode of learning
+     */
+    public String getModeOfLearning() {
+        return getCellValueStringForCurrentRow(MODE_OF_LEARNING_COLUMN);
     }
     
     /** Get the description of the learning activity on the current row.

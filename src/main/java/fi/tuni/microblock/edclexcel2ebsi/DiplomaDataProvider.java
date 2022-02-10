@@ -74,8 +74,9 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var course = data.personsTable.getAchievement();
             data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
             String assessment = data.achievementsTable.getAssessment();
-            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), null, null); 
-            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), null, wasAwardedBy, null, null, null );
+            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), null, null);
+            var activities = getLearningActivities();
+            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, null );
             subject.setAchieved(List.of(achievement));
             diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
@@ -108,6 +109,20 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     
     private Europass.EuropassSubject.Achieved.SpecifiedBy createLearningSpecification() {
         return null;
+    }
+    
+    private List< Europass.EuropassSubject.Achieved.WasInfluencedBy > getLearningActivities() {
+        List< Europass.EuropassSubject.Achieved.WasInfluencedBy > activities = new ArrayList<>();
+        for ( String activityName : data.achievementsTable.getActivities() ) {
+            int row = data.activitiesTable.getRowForActivity(activityName);
+            data.activitiesTable.setCurrentRow(row);
+            var specificationTitle = data.activitiesTable.getSpecificationTitle();
+            String activityType = data.activitiesTable.getActivityType();
+            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( "id", specificationTitle, List.of(activityType), "workload", List.of());
+            String description = data.activitiesTable.getDescription();
+            activities.add( new Europass.EuropassSubject.Achieved.WasInfluencedBy("id", null, activityName, description, null, "", null, null, null, specification));
+        }
+        return activities;
     }
     
     /** Get current state as string.
