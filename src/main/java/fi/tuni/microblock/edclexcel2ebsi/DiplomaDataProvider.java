@@ -76,7 +76,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             String assessment = data.achievementsTable.getAssessment();
             var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), null, null);
             var activities = getLearningActivities();
-            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, null );
+            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, List.of(createLearningSpecification()) );
             subject.setAchieved(List.of(achievement));
             diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
@@ -108,7 +108,20 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     }
     
     private Europass.EuropassSubject.Achieved.SpecifiedBy createLearningSpecification() {
-        return null;
+        String specificationTitle = data.achievementsTable.getSpecificationTitle();
+        var specification = new Europass.EuropassSubject.Achieved.SpecifiedBy("id", null, specificationTitle, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        specification.setLearningSetting(data.achievementsTable.getLearningSetting());
+        specification.setLearningOpportunityType(List.of(data.achievementsTable.getLearningOpportunityType()));
+        var outcomes = new ArrayList<Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome>();
+        for ( String outcomeName : data.achievementsTable.getLearningOutcomes()) {
+            var outcome = new Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome("id", outcomeName, null, null, null, null, null, null);
+            data.outcomesTable.setCurrentRow(data.outcomesTable.getRowForLearningOutcome(outcomeName));
+            outcome.setDefinition(data.outcomesTable.getDescription());
+            outcome.setRelatedESCOSkill(data.outcomesTable.getEscoSkills());
+            outcomes.add(outcome);
+        }
+        specification.setLearningOutcome(outcomes);
+        return specification; 
     }
     
     private List< Europass.EuropassSubject.Achieved.WasInfluencedBy > getLearningActivities() {
@@ -118,9 +131,9 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             data.activitiesTable.setCurrentRow(row);
             var specificationTitle = data.activitiesTable.getSpecificationTitle();
             String activityType = data.activitiesTable.getActivityType();
-            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( "id", specificationTitle, List.of(activityType), "workload", List.of());
+            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( "id", specificationTitle, List.of(activityType), null, null);
             String description = data.activitiesTable.getDescription();
-            activities.add( new Europass.EuropassSubject.Achieved.WasInfluencedBy("id", null, activityName, description, null, "", null, null, null, specification));
+            activities.add( new Europass.EuropassSubject.Achieved.WasInfluencedBy("id", null, activityName, description, null, null, null, null, null, specification));
         }
         return activities;
     }

@@ -24,6 +24,8 @@ public class AchievementsTable extends DataTable {
     public static final String INFLUENCED_BY_COLUMN = "Influenced by";
     public static final String SPECIFICATION_TITLE_COLUMN = "Specification Title";
     public static final String LEARNING_OUTCOMES_COLUMN = "Learning Outcomes";
+    public static final String LEARNING_SETTING_COLUMN = "Learning Setting";
+    public static final String LEARNING_OPPORTUNITY_TYPE_COLUMN = "Learning Opportunity Type";
     
     /** Create a AchievementsTable.
      * @param data excel workbook containing the activities sheet.
@@ -84,5 +86,19 @@ public class AchievementsTable extends DataTable {
      */
     public List<String> getLearningOutcomes() {
         return getCellMultiValueStringForCurrentRow(LEARNING_OUTCOMES_COLUMN);
+    }
+    
+    /** Get learning setting for the learning specification on the current row.
+     * @return learning setting
+     */
+    public String getLearningSetting() {
+        return getCellValueStringForCurrentRow(LEARNING_SETTING_COLUMN);
+    }
+    
+    /** Get learning opportunity type for learning specification on the current row.
+     * @return learning opportunity type.
+     */
+    public String getLearningOpportunityType() {
+        return getCellValueStringForCurrentRow(LEARNING_OPPORTUNITY_TYPE_COLUMN);
     }
 }
