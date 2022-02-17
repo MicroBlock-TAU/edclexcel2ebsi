@@ -65,7 +65,8 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             Europass diploma = (Europass)template;
             diploma.setIssuer(proofConfig.getIssuerDid());
             diploma.setId( generateId("credential"));
-            diploma.setIssuanceDate(getCurrentDate());
+            //diploma.setIssuanceDate(getCurrentDate());
+            diploma.setIssued(null);
             var subject = new Europass.EuropassSubject();
             diploma.setCredentialSubject(subject);
             subject.setId(proofConfig.getSubjectDid());
