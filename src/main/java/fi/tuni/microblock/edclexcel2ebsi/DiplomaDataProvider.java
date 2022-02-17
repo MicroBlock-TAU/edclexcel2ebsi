@@ -64,7 +64,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             
             Europass diploma = (Europass)template;
             diploma.setIssuer(proofConfig.getIssuerDid());
-            diploma.setId( "education#higherEducation#" +UUID.randomUUID().toString());
+            diploma.setId( generateId("credential"));
             diploma.setIssuanceDate(getCurrentDate());
             var subject = new Europass.EuropassSubject();
             diploma.setCredentialSubject(subject);
@@ -74,9 +74,9 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             var course = data.personsTable.getAchievement();
             data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
             String assessment = data.achievementsTable.getAssessment();
-            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy("id", List.of(proofConfig.getIssuerDid()), null, null);
+            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy(generateId("awardingProcess"), List.of(proofConfig.getIssuerDid()), null, null);
             var activities = getLearningActivities();
-            var achievement = new Europass.EuropassSubject.Achieved("urn:epass:learningAchievement:1", course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, List.of(createLearningSpecification()) );
+            var achievement = new Europass.EuropassSubject.Achieved(generateId("learningAchievement"), course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, List.of(createLearningSpecification()) );
             subject.setAchieved(List.of(achievement));
             diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
             return diploma;
@@ -94,7 +94,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         if ( gradingSchemeId != null && !gradingSchemeId .isEmpty()) {
             grading = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme(gradingSchemeId , null, null);
         }
-        var specification = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy("id", specificationTitle, grading);
+        var specification = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy(generateId("assessmentSpecification"), specificationTitle, grading);
         var subAssessmentNames = data.assessmentsTable.getSubAssessments();
         List<Europass.EuropassSubject.Achieved.WasDerivedFrom> subAssessments = null;
         if ( !subAssessmentNames.isEmpty()) {
@@ -104,17 +104,17 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             }
         }
         
-        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( "id", assessmentName, grade.toString(), null, subAssessments, specification );
+        return new Europass.EuropassSubject.Achieved.WasDerivedFrom( generateId("assessment"), assessmentName, grade.toString(), null, subAssessments, specification );
     }
     
     private Europass.EuropassSubject.Achieved.SpecifiedBy createLearningSpecification() {
         String specificationTitle = data.achievementsTable.getSpecificationTitle();
-        var specification = new Europass.EuropassSubject.Achieved.SpecifiedBy("id", null, specificationTitle, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        var specification = new Europass.EuropassSubject.Achieved.SpecifiedBy(generateId("learningSpecification"), null, specificationTitle, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         specification.setLearningSetting(data.achievementsTable.getLearningSetting());
         specification.setLearningOpportunityType(List.of(data.achievementsTable.getLearningOpportunityType()));
         var outcomes = new ArrayList<Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome>();
         for ( String outcomeName : data.achievementsTable.getLearningOutcomes()) {
-            var outcome = new Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome("id", outcomeName, null, null, null, null, null, null);
+            var outcome = new Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome(generateId("learningOutcome"), outcomeName, null, null, null, null, null, null);
             data.outcomesTable.setCurrentRow(data.outcomesTable.getRowForLearningOutcome(outcomeName));
             outcome.setDefinition(data.outcomesTable.getDescription());
             outcome.setRelatedESCOSkill(data.outcomesTable.getEscoSkills());
@@ -131,9 +131,9 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             data.activitiesTable.setCurrentRow(row);
             var specificationTitle = data.activitiesTable.getSpecificationTitle();
             String activityType = data.activitiesTable.getActivityType();
-            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( "id", specificationTitle, List.of(activityType), null, null);
+            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( generateId("learningActivitySpecification"), specificationTitle, List.of(activityType), null, null);
             String description = data.activitiesTable.getDescription();
-            activities.add( new Europass.EuropassSubject.Achieved.WasInfluencedBy("id", null, activityName, description, null, null, null, null, null, specification));
+            activities.add( new Europass.EuropassSubject.Achieved.WasInfluencedBy(generateId("learningActivity"), null, activityName, description, null, null, null, null, null, specification));
         }
         return activities;
     }
@@ -191,7 +191,13 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         return sheet.getRow(address.getRow()).getCell(address.getColumn());
     }
     
-    
+    /** Generate a random id for the given type of object.
+     * @param type Type that will be a part of the id.
+     * @return Id of the form urn:epass:type:random_uuid
+     */
+    private static String generateId(String type) {
+        return "urn:epass:" +type +":" +UUID.randomUUID().toString();
+    }
     
     /** Indicates that the stucture of the excel file does not match what was expected.
      * @author Otto Hylli
