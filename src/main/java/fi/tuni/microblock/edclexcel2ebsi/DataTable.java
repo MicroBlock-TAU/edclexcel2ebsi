@@ -128,6 +128,23 @@ public abstract class DataTable {
         }
     }
     
+    /** For the given row get the value for the colun with the given heading name as a number.
+     * @param row number of row
+     * @param columnHeading name of column
+     * @return Value of the cell.
+     * @throws DiplomaDataProvider.ExcelStructureException There is no colun with the given heading.
+     */
+    public double getCellValueNumber( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
+        var value = getCellValue(row, columnHeading, false);
+        try {
+            return (Double)value; 
+        }
+        
+        catch ( ClassCastException e ) {
+            throw new DiplomaDataProvider.ExcelStructureException( "Value for colun " +columnHeading +" at row " +row +" on sheet " +getSheetName() +" could not be converted to Double. Value was " +value +" of type " +value.getClass());
+        }
+    }
+    
     /** For the given row get the value for the colun with the given heading name as a date.
      * @param row number of row
      * @param columnHeading name of column
@@ -135,7 +152,8 @@ public abstract class DataTable {
      * @throws DiplomaDataProvider.ExcelStructureException There is no colun with the given heading or the value cannot be converted into a date.
      */
     public Date getCellValueDate( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
-        var value = getCellValue(row, columnHeading, true);        try {
+        var value = getCellValue(row, columnHeading, true);
+        try {
             return (Date)value; 
         }
         
@@ -151,6 +169,15 @@ public abstract class DataTable {
      */
     public String getCellValueStringForCurrentRow( String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
         return getCellValueString(currentRow, columnHeading);
+    }
+    
+    /** For the current row get cell value for the given heading as a string.
+     * @param columnHeading Colun heading name.
+     * @return cell value
+     * @throws DiplomaDataProvider.ExcelStructureException no colun with given heading name
+     */
+    public double getCellValueNumberForCurrentRow( String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
+        return getCellValueNumber(currentRow, columnHeading);
     }
     
     /** For the current row get cell value for the given heading as a date.

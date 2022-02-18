@@ -26,6 +26,7 @@ public class AchievementsTable extends DataTable {
     public static final String LEARNING_OUTCOMES_COLUMN = "Learning Outcomes";
     public static final String LEARNING_SETTING_COLUMN = "Learning Setting";
     public static final String LEARNING_OPPORTUNITY_TYPE_COLUMN = "Learning Opportunity Type";
+    public static final String ECTS_CREDIT_POINTS_COLUMN = "ECTS Credit Points";
     
     /** Create a AchievementsTable.
      * @param data excel workbook containing the activities sheet.
@@ -100,5 +101,12 @@ public class AchievementsTable extends DataTable {
      */
     public String getLearningOpportunityType() {
         return getCellValueStringForCurrentRow(LEARNING_OPPORTUNITY_TYPE_COLUMN);
+    }
+    
+    /** Get ects crdit points for the learning specification on the current row.
+     * @return ects credit points.
+     */
+    public int getEctsCreditPoints() {
+        return (int) getCellValueNumberForCurrentRow( ECTS_CREDIT_POINTS_COLUMN);
     }
 }

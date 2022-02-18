@@ -113,6 +113,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         var specification = new Europass.EuropassSubject.Achieved.SpecifiedBy(generateId("learningSpecification"), null, specificationTitle, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         specification.setLearningSetting(data.achievementsTable.getLearningSetting());
         specification.setLearningOpportunityType(List.of(data.achievementsTable.getLearningOpportunityType()));
+        specification.setECTSCreditPoints(data.achievementsTable.getEctsCreditPoints());
         var outcomes = new ArrayList<Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome>();
         for ( String outcomeName : data.achievementsTable.getLearningOutcomes()) {
             var outcome = new Europass.EuropassSubject.Achieved.SpecifiedBy.LearningOutcome(generateId("learningOutcome"), outcomeName, null, null, null, null, null, null);
