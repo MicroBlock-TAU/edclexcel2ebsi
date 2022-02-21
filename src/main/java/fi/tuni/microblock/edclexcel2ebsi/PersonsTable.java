@@ -23,6 +23,8 @@ public class PersonsTable extends DataTable {
     protected final static String GIVEN_NAME_COLUMN = "Given Name";
     public static final String LEARNING_ACTIVITIES_COLUMN = "Learning Activities";
     public static final String GRADE_COLUMN = "Grade";
+    public final static String IDENTIFIER_1_SCHEME_NAME_COLUMN = "Other Identifier 1 Scheme Name";
+    public final static String IDENTIFIER_1_COLUMN = "Other Identifier 1";
     protected final static int PERSONS_HEADER_ROW_NUM = 7;
 
     /** Create persons table for the given work book.
@@ -95,5 +97,19 @@ public class PersonsTable extends DataTable {
         } while( headingCell != null && headingCell.getStringCellValue().equals(GRADE_COLUMN));
         
         return grades;
+    }
+    
+    /** Get other identifier 1 scheme name for person on the current row.
+     * @return other identifier 1 scheme name
+     */
+    public String getOtherIdentifier1SchemeName() {
+        return getCellValueStringForCurrentRow( PersonsTable.IDENTIFIER_1_SCHEME_NAME_COLUMN);
+    }
+    
+    /** Get other identifier 1 for person on the current row.
+     * @return other identifier 1
+     */
+    public String getOtherIdentifier1() {
+        return getCellValueStringForCurrentRow( PersonsTable.IDENTIFIER_1_COLUMN);
     }
 }

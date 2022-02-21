@@ -119,13 +119,7 @@ public abstract class DataTable {
      */
     public String getCellValueString( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
         var value = getCellValue(row, columnHeading, false);
-        try {
-            return (String)value; 
-        }
-        
-        catch ( ClassCastException e ) {
-            throw new DiplomaDataProvider.ExcelStructureException( "Value for colun " +columnHeading +" at row " +row +" on sheet " +getSheetName() +" could not be converted to String. Value was " +value +" of type " +value.getClass());
-        }
+        return value.toString(); 
     }
     
     /** For the given row get the value for the colun with the given heading name as a number.

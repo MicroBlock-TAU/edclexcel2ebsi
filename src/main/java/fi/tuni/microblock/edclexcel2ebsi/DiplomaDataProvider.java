@@ -71,6 +71,12 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             diploma.setCredentialSubject(subject);
             subject.setId(proofConfig.getSubjectDid());
             data.personsTable.setCurrentRow(personalInfo.getRowNum());
+            String identifierScheme = data.personsTable.getOtherIdentifier1SchemeName();
+            String identifier = data.personsTable.getOtherIdentifier1();
+            System.out.println( "identifier " +identifierScheme +", " +identifier );
+            if ( !identifierScheme.isBlank() && !identifier.isBlank()) {
+                subject.setIdentifier(new Europass.EuropassSubject.Identifier(identifierScheme, identifier));
+            }
             
             var course = data.personsTable.getAchievement();
             data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
