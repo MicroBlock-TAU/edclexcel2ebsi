@@ -73,7 +73,6 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             data.personsTable.setCurrentRow(personalInfo.getRowNum());
             String identifierScheme = data.personsTable.getOtherIdentifier1SchemeName();
             String identifier = data.personsTable.getOtherIdentifier1();
-            System.out.println( "identifier " +identifierScheme +", " +identifier );
             if ( !identifierScheme.isBlank() && !identifier.isBlank()) {
                 subject.setIdentifier(new Europass.EuropassSubject.Identifier(identifierScheme, identifier));
             }
@@ -139,7 +138,8 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
             data.activitiesTable.setCurrentRow(row);
             var specificationTitle = data.activitiesTable.getSpecificationTitle();
             String activityType = data.activitiesTable.getActivityType();
-            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( generateId("learningActivitySpecification"), specificationTitle, List.of(activityType), null, null);
+            var specification = new Europass.EuropassSubject.Achieved.WasInfluencedBy.SpecifiedBy( generateId("learningActivitySpecification"), specificationTitle, null, List.of(activityType), null, null, null, null, null, null, null, null, null, null, null);
+            specification.setMode(List.of(data.activitiesTable.getModeOfLearning()));
             String description = data.activitiesTable.getDescription();
             activities.add( new Europass.EuropassSubject.Achieved.WasInfluencedBy(generateId("learningActivity"), null, activityName, description, null, null, null, null, null, specification));
         }

@@ -28,12 +28,21 @@ public class AchievementsTable extends DataTable {
     public static final String LEARNING_OPPORTUNITY_TYPE_COLUMN = "Learning Opportunity Type";
     public static final String ECTS_CREDIT_POINTS_COLUMN = "ECTS Credit Points";
     
+    private VocabularyMapping learningSettingMapping;
+    private VocabularyMapping learningOpportunityTypeMapping;
+    
     /** Create a AchievementsTable.
      * @param data excel workbook containing the activities sheet.
      * @param credentials CredentialData this will be a part of.
      */
     public AchievementsTable( XSSFWorkbook data, CredentialData credentials ) {
         super(data, credentials);
+        learningSettingMapping = new MapBasedVocabularyMapping( Map.of(
+                "formal learning", "http://data.europa.eu/snb/learning-setting/6fd4685715"
+                ));
+        learningOpportunityTypeMapping = new MapBasedVocabularyMapping( Map.of(
+                "Course", "http://data.europa.eu/snb/learning-opportunity/05053c1cbe"
+                ));
     }
 
     @Override
@@ -93,14 +102,14 @@ public class AchievementsTable extends DataTable {
      * @return learning setting
      */
     public String getLearningSetting() {
-        return getCellValueStringForCurrentRow(LEARNING_SETTING_COLUMN);
+        return learningSettingMapping.getUri( getCellValueStringForCurrentRow(LEARNING_SETTING_COLUMN));
     }
     
     /** Get learning opportunity type for learning specification on the current row.
      * @return learning opportunity type.
      */
     public String getLearningOpportunityType() {
-        return getCellValueStringForCurrentRow(LEARNING_OPPORTUNITY_TYPE_COLUMN);
+        return learningOpportunityTypeMapping.getUri( getCellValueStringForCurrentRow(LEARNING_OPPORTUNITY_TYPE_COLUMN));
     }
     
     /** Get ects crdit points for the learning specification on the current row.
