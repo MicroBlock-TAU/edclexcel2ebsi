@@ -100,4 +100,12 @@ class CredentialLibTest {
         var achievements = credentials.listCredentialsForStudent(email);
         assertTrue( achievements.size() == expectedAchievements.size() && expectedAchievements.containsAll(achievements) && achievements.containsAll(expectedAchievements), "expected " +expectedAchievements + " got " +achievements  );
     }
+    
+    /** Test we get credential type and schema.
+     * 
+     */
+    @Test void getCredentialSchemaAndType() {
+        assertEquals( "Europass", DiplomaDataProvider.getCredentialType());
+        assertEquals("https://raw.githubusercontent.com/walt-id/waltid-ssikit-vclib/master/src/test/resources/schemas/Europass.json", DiplomaDataProvider.getCredentialSchema());
+    }
 }

@@ -47,6 +47,20 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         this.title = title;
     }
     
+    /** Get the URI of the schema of the credential this creates.
+     * @return schema URI
+     */
+    public static String getCredentialSchema() {
+        return Europass.Companion.getTemplate().invoke().getCredentialSchema().getId();
+    }
+    
+    /** Get the type of the credential this creates.
+     * @return credential type
+     */
+    public static String getCredentialType() {
+        return Europass.Companion.getType().get(Europass.Companion.getType().size() -1);
+    }
+    
     /** Create the contents of the verifiable diploma.
      *
      */
