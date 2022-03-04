@@ -109,10 +109,10 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         Double grade = data.personsTable.getAssesments().get(assessmentName);
         data.assessmentsTable.setCurrentRow( data.assessmentsTable.getRowForAssessment(assessmentName));
         var specificationTitle = data.assessmentsTable.getSpecificationTitle();
-        var gradingSchemeId = data.assessmentsTable.getGradingSchemeIdentifier();
+        var gradingSchemeTitle = data.assessmentsTable.getGradingSchemeTitle();
         Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme grading = null;
-        if ( gradingSchemeId != null && !gradingSchemeId .isEmpty()) {
-            grading = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme(gradingSchemeId , null, null);
+        if ( gradingSchemeTitle != null && !gradingSchemeTitle .isEmpty()) {
+            grading = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy.GradingScheme( generateId("gradingScheme"), gradingSchemeTitle, null);
         }
         var specification = new Europass.EuropassSubject.Achieved.WasDerivedFrom.SpecifiedBy(generateId("assessmentSpecification"), specificationTitle, grading);
         var subAssessmentNames = data.assessmentsTable.getSubAssessments();

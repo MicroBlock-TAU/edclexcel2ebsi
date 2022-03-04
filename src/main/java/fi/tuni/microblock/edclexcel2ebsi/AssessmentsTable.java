@@ -23,7 +23,7 @@ public class AssessmentsTable extends DataTable {
     public final static String DESCRIPTION_COLUMN = "Description";
     public final static String SUB_ASSESSMENTS_COLUMN = "Sub-Assessments";
     public final static String SPECIFICATION_TITLE_COLUMN = "Assessment Specification Title";
-    public final static String GRADING_SCHEME_IDENTIFIER_COLUMN  = "Grading Scheme Identifier Scheme";
+    public final static String GRADING_SCHEME_TITLE_COLUMN  = "Grading Scheme Title";
     
     /** Create a AssessmentsTable.
      * @param data excel workbook containing the assessments sheet.
@@ -54,8 +54,8 @@ public class AssessmentsTable extends DataTable {
         return getCellValueStringForCurrentRow(SPECIFICATION_TITLE_COLUMN);
     }
     
-    public String getGradingSchemeIdentifier() {
-        return getCellValueStringForCurrentRow(GRADING_SCHEME_IDENTIFIER_COLUMN);
+    public String getGradingSchemeTitle() {
+        return getCellValueStringForCurrentRow(GRADING_SCHEME_TITLE_COLUMN);
     }
     
     /** Find the row number for the assessment with the given title.
