@@ -6,6 +6,7 @@
 package fi.tuni.microblock.edclexcel2ebsi;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +49,15 @@ public class Cli {
         logger.info("Starting ssikit test.");
         
         try {
+            var id = credentials.createId("jane2.doe2@test.edu");
+            System.out.println("Student id:");
+            System.out.println(id);
+            CredentialLib.writeToFile("id.json", id);
             var diploma = credentials.createDiploma( "jane2.doe2@test.edu", "Data and Software Business module" );
             System.out.println("Diploma:");
             System.out.println(diploma);
             CredentialLib.writeToFile("diploma.json", diploma);
-            var diplomaVp = credentials.createPresentation( CredentialLib.readStringFromFile("diploma.json") );
+            var diplomaVp = credentials.createPresentation( List.of(CredentialLib.readStringFromFile("diploma.json"), CredentialLib.readStringFromFile("id.json")) );
             System.out.println("Diploma presentation:");
             System.out.println(diplomaVp);
             CredentialLib.writeToFile("presentation.json", diplomaVp);
@@ -115,7 +120,7 @@ public class Cli {
             ) {
         try {
             var credential = CredentialLib.readStringFromFile(credentialFile);
-            var presentation = credentials.createPresentation(credential);
+            var presentation = credentials.createPresentation(List.of(credential));
             CredentialLib.writeToFile(presentationFile, presentation);
         }
         

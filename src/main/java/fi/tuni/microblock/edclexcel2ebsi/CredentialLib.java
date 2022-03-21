@@ -118,6 +118,14 @@ public class CredentialLib {
         var diploma = signatory.issue("Europass", proofConfig, createDataProvider( email, title ));
         return diploma;
     }
+    
+    public String createId( String email) throws DiplomaDataProvider.RequiredDataNotFoundException, DiplomaDataProvider.ExcelStructureException {
+        var signatory = Signatory.Companion.getService();
+        
+        var proofConfig = new ProofConfig(issuerDid, holderDid, null, null, ProofType.LD_PROOF, null, null, null, null, null, null, null, null );
+        var id = signatory.issue("VerifiableId", proofConfig, createDataProvider( email, null ));
+        return id;
+    }
 
     /** Create a presentation of the given diploma credential.
      * 
@@ -125,9 +133,9 @@ public class CredentialLib {
      * @param diploma The verifiable diploma json.
      * @return The verifiable presentation of the diploma.
      */
-    public String createPresentation( String diploma) {
+    public String createPresentation( List<String> credentials) {
         var custodian = Custodian.Companion.getService();
-        var diplomaVp = custodian.createPresentation(List.of(diploma), holderDid, null, null, null, null);
+        var diplomaVp = custodian.createPresentation(credentials, holderDid, null, null, null, null);
         return diplomaVp;
     }
     

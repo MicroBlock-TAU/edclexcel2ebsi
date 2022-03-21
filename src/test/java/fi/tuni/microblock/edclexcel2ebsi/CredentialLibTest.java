@@ -17,6 +17,7 @@ import java.util.Map;
 import id.walt.vclib.model.VerifiableCredential;
 import id.walt.vclib.credentials.Europass;
 import id.walt.vclib.credentials.VerifiableDiploma;
+import id.walt.vclib.credentials.VerifiableId;
 
 /** Tests for the CredentialLib class.
  * @author Otto Hylli
@@ -41,6 +42,15 @@ class CredentialLibTest {
         String diploma = credentials.createDiploma("jane2.doe2@test.edu", "Data and Software Business module");
         assertNotNull(diploma, "app should create a diploma.");
         return diploma;
+    }
+    
+    /** Helper method for creating a test id.
+     * @return the credential
+     */
+    private String createTestId() {
+        String id = credentials.createId("jane2.doe2@test.edu");
+        assertNotNull(id, "app should create a id.");
+        return id;
     }
     
     /** Test that the diploma is created and it contains correct information.
@@ -73,14 +83,37 @@ class CredentialLibTest {
         checkVerification(diploma);
     }
     
-    /** Check that verification of presentation of the diploma works.
+    /** Check that verification of presentation of the diploma and id works.
      * 
      */
     @Test void verifyPresentation() {
         var diploma = createTestDiploma();
-        var vp = credentials.createPresentation(diploma);
+        var id = createTestId();
+        var vp = credentials.createPresentation(List.of(diploma, id));
         assertNotNull( vp, "Should create a presentation." );
         checkVerification(vp);
+    }
+    
+    /** Create a test id and check that it has expected values.
+     * 
+     */
+    @Test void testCreateId() {
+        String idStr = createTestId();
+        VerifiableId id = (VerifiableId)VerifiableCredential.Companion.fromString(idStr);
+        var subject = id.getCredentialSubject();
+        assertEquals( "Jane2", subject.getFirstName());
+        assertEquals( "Doe2", subject.getFamilyName());
+        var identifier = subject.getIdentifier().get(0);
+        assertEquals( "Student identification number", identifier.getSchemeID() );
+        assertEquals( "x94476556", identifier.getValue());
+    }
+    
+    /** Test verification of student id.
+     * 
+     */
+    @Test void verifyId() {
+        var id = createTestId();
+        checkVerification(id);
     }
     
     /** Helper method for checking that a verification result is successful.

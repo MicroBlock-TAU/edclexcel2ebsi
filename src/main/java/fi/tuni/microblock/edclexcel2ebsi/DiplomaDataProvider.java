@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.CellType;
@@ -20,10 +21,11 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import id.walt.signatory.ProofConfig;
 import id.walt.signatory.SignatoryDataProvider;
 import id.walt.vclib.credentials.VerifiableDiploma;
+import id.walt.vclib.credentials.VerifiableId;
 import id.walt.vclib.credentials.Europass;
 import id.walt.vclib.model.VerifiableCredential;
 
-/** A custom data provider to be used with ssikit for getting diploma contents from the EDCL excel file.
+/** A custom data provider to be used with ssikit for getting diploma and student id contents from the EDCL excel file.
  * @author Otto Hylli
  *
  */
@@ -36,10 +38,10 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
     private String email;
     private String title;
     
-    /** Create provider for creating a credential for the given student and credential. 
+    /** Create provider for creating credentials for the given student and Europass credential. 
      * @param data the credential data from which this creates credentials.
      * @param email email of the student this is used to create a credential for.
-     * @param title Title of the credential from the excel this will create a credential for.
+     * @param title Title of the credential from the excel this will create a credential for. Can be null if only the student id will be created.
      */
     public DiplomaDataProvider( CredentialData data, String email, String title ) {
         this.data = data;
@@ -47,7 +49,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         this.title = title;
     }
     
-    /** Get the URI of the schema of the credential this creates.
+    /** Get the URI of the schema of the micro-credential this creates.
      * @return schema URI
      */
     public static String getCredentialSchema() {
@@ -61,48 +63,99 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         return Europass.Companion.getType().get(Europass.Companion.getType().size() -1);
     }
     
-    /** Create the contents of the verifiable diploma.
+    /** Get the URI of the schema of the id credential  this creates.
+     * @return schema URI
+     */
+    public static String getIdCredentialSchema() {
+        return VerifiableId.Companion.getTemplate().invoke().getCredentialSchema().getId();
+    }
+    
+    /** Get the type of the id credential this creates.
+     * @return credential type
+     */
+    public static String getIdCredentialType() {
+        return VerifiableId.Companion.getType().get(Europass.Companion.getType().size() -1);
+    }
+    
+    /** Create the contents of the verifiable diploma or id depending on the type of the template.
      *
      */
     @Override
     public VerifiableCredential populate( VerifiableCredential template, ProofConfig proofConfig ) {
         if (template instanceof Europass) {
-            // get excel row containing the student matching the email and achievement.
-            XSSFRow credentialInfo = data.getCredential(email, title);
-            // get the corresponding personal info
-            var personalInfo = data.getPerson(credentialInfo);
-            //printRow(personalInfo);
-            data.credentialsTable.setCurrentRow(credentialInfo.getRowNum());
-            // get the organisation row the credential row points to
-            data.organisationsTable.setCurrentRow( data.credentialsTable.getLinkedOrganisation().getRowNum() );
-            
-            Europass diploma = (Europass)template;
-            diploma.setIssuer(proofConfig.getIssuerDid());
-            diploma.setId( generateId("credential"));
-            //diploma.setIssuanceDate(getCurrentDate());
-            diploma.setIssued(null);
-            var subject = new Europass.EuropassSubject();
-            diploma.setCredentialSubject(subject);
-            subject.setId(proofConfig.getSubjectDid());
-            data.personsTable.setCurrentRow(personalInfo.getRowNum());
-            String identifierScheme = data.personsTable.getOtherIdentifier1SchemeName();
-            String identifier = data.personsTable.getOtherIdentifier1();
-            if ( !identifierScheme.isBlank() && !identifier.isBlank()) {
-                subject.setIdentifier(new Europass.EuropassSubject.Identifier(identifierScheme, identifier));
-            }
-            
-            var course = data.personsTable.getAchievement();
-            data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
-            String assessment = data.achievementsTable.getAssessment();
-            var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy(generateId("awardingProcess"), List.of(proofConfig.getIssuerDid()), null, null);
-            var activities = getLearningActivities();
-            var achievement = new Europass.EuropassSubject.Achieved(generateId("learningAchievement"), course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, List.of(createLearningSpecification()) );
-            subject.setAchieved(List.of(achievement));
-            diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
-            return diploma;
+            return createDiploma(template, proofConfig);
         }
         
-        throw new IllegalArgumentException("Only diploma is supported.");
+        else if ( template instanceof VerifiableId ) {
+            return createId( template, proofConfig );
+        }
+        
+        throw new IllegalArgumentException("Only Europass and VerifiableId are supported.");
+    }
+    
+    /** Create micro-credential from the excel data.
+     * @param template credential template
+     * @param proofConfig proofconfig
+     * @return The credential.
+     */
+    private VerifiableCredential createDiploma( VerifiableCredential template, ProofConfig proofConfig ) {
+        // get excel row containing the student matching the email and achievement.
+        XSSFRow credentialInfo = data.getCredential(email, title);
+        // get the corresponding personal info
+        var personalInfo = data.getPerson(credentialInfo);
+        //printRow(personalInfo);
+        data.credentialsTable.setCurrentRow(credentialInfo.getRowNum());
+        // get the organisation row the credential row points to
+        data.organisationsTable.setCurrentRow( data.credentialsTable.getLinkedOrganisation().getRowNum() );
+        
+        Europass diploma = (Europass)template;
+        diploma.setIssuer(proofConfig.getIssuerDid());
+        diploma.setId( generateId("credential"));
+        //diploma.setIssuanceDate(getCurrentDate());
+        diploma.setIssued(null);
+        var subject = new Europass.EuropassSubject();
+        diploma.setCredentialSubject(subject);
+        subject.setId(proofConfig.getSubjectDid());
+        data.personsTable.setCurrentRow(personalInfo.getRowNum());
+        String identifierScheme = data.personsTable.getOtherIdentifier1SchemeName();
+        String identifier = data.personsTable.getOtherIdentifier1();
+        if ( !identifierScheme.isBlank() && !identifier.isBlank()) {
+            subject.setIdentifier(new Europass.EuropassSubject.Identifier(identifierScheme, identifier));
+        }
+        
+        var course = data.personsTable.getAchievement();
+        data.achievementsTable.setCurrentRow( data.achievementsTable.getRowForAchievement(course));
+        String assessment = data.achievementsTable.getAssessment();
+        var wasAwardedBy = new Europass.EuropassSubject.Achieved.WasAwardedBy(generateId("awardingProcess"), List.of(proofConfig.getIssuerDid()), null, null);
+        var activities = getLearningActivities();
+        var achievement = new Europass.EuropassSubject.Achieved(generateId("learningAchievement"), course, null, null, List.of(createAssessment(assessment)), activities, wasAwardedBy, null, null, List.of(createLearningSpecification()) );
+        subject.setAchieved(List.of(achievement));
+        diploma.setValidFrom( dateToUtcString(data.credentialsTable.getValidFrom()));
+        return diploma;
+    }
+    
+    /** Create student id.
+     * @param template template for the credential
+     * @param proofConfig proof config for the credential
+     * @return the student id.
+     */
+    private VerifiableCredential createId( VerifiableCredential template, ProofConfig proofConfig ) {
+        VerifiableId id = (VerifiableId)template;
+        id.setIssuer(proofConfig.getIssuerDid());
+        id.setValidFrom(getCurrentDate());
+        id.setIssued(null);
+        id.setEvidence(null);
+        int personRow = data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email)).getRowNum();
+        data.personsTable.setCurrentRow(personRow);
+        var subject = new VerifiableId.VerifiableIdSubject();
+        subject.setId(proofConfig.getSubjectDid());
+        subject.setFamilyName(data.personsTable.getFamilyName());
+        subject.setFirstName(data.personsTable.getGivenName());
+        var identifier = new VerifiableId.VerifiableIdSubject.Identifier(data.personsTable.getOtherIdentifier1SchemeName(), data.personsTable.getOtherIdentifier1());
+        subject.setIdentifier(List.of(identifier));
+        id.setCredentialSubject(subject);
+        id.setId("identity#verifiableID#" +UUID.randomUUID().toString());
+        return id;
     }
     
     private Europass.EuropassSubject.Achieved.WasDerivedFrom createAssessment( String assessmentName ) {
