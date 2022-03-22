@@ -26,6 +26,7 @@ import id.walt.vclib.credentials.VerifiableId;
 class CredentialLibTest {
     
     private CredentialLib credentials;
+    private final String TEST_STUDENT_EMAIL = "jane2.doe2@test.edu";
     
     /** Create based on config file for tests.
      * 
@@ -141,4 +142,13 @@ class CredentialLibTest {
         assertEquals( "Europass", DiplomaDataProvider.getCredentialType());
         assertEquals("https://raw.githubusercontent.com/walt-id/waltid-ssikit-vclib/master/src/test/resources/schemas/Europass.json", DiplomaDataProvider.getCredentialSchema());
     }
+    
+    /** Test that checking if student exists works.
+     * 
+     */
+    @Test void studentExists() {
+        assertTrue( credentials.studentExists(TEST_STUDENT_EMAIL));
+        assertFalse( credentials.studentExists("test@test.fi"));
+    }
+    
 }

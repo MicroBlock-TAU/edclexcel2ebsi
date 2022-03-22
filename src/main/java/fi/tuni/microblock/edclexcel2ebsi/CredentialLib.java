@@ -198,6 +198,14 @@ public class CredentialLib {
         return credentialData.listCredentialsForStudent(email);
     }
     
+    /** Check if there is personal data for student with given email.
+     * @param email student email
+     * @return true if data is found, false if not.
+     */
+    public boolean studentExists( String email ) {
+        return credentialData.studentExists(email);
+    }
+    
     /** Create a DiplomaDataProvider for creating a credential for the given student for credential with given title.
      * @param email student email address.
      * @param title title of a credential

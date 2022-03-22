@@ -145,7 +145,7 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         id.setValidFrom(getCurrentDate());
         id.setIssued(null);
         id.setEvidence(null);
-        int personRow = data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email)).getRowNum();
+        int personRow = data.personsTable.getRowForPerson(email);
         data.personsTable.setCurrentRow(personRow);
         var subject = new VerifiableId.VerifiableIdSubject();
         subject.setId(proofConfig.getSubjectDid());

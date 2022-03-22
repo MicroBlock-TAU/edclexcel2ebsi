@@ -112,4 +112,12 @@ public class PersonsTable extends DataTable {
     public String getOtherIdentifier1() {
         return getCellValueStringForCurrentRow( PersonsTable.IDENTIFIER_1_COLUMN);
     }
+    
+    /** Get number of row for person with the given email.
+     * @param email email address of a person.
+     * @return row number for the person.
+     */
+    public int getRowForPerson( String email ) throws DiplomaDataProvider.RequiredDataNotFoundException {
+        return getRowWithValues(Map.of( EMAIL_COLUMN, email)).getRowNum();
+    }
 }

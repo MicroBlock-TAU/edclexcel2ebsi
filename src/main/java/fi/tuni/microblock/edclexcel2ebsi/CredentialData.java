@@ -115,4 +115,19 @@ public class CredentialData {
         
         return credentials;
     }
+    
+    /** Check if there is personal data for student with given email.
+     * @param email student email
+     * @return true if data is found, false if not.
+     */
+    public boolean studentExists( String email ) {
+        try {
+            personsTable.getRowForPerson(email);
+            return true;
+        }
+        
+        catch ( DiplomaDataProvider.RequiredDataNotFoundException e ) {
+            return false;
+        }
+    }
 }
