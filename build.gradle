@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "fi.tuni.microblock"
-version = "0.2.0-snapshot"
+version = "0.3.0"
 
 publishing {
     repositories {
