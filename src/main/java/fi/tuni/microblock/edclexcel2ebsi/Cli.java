@@ -49,7 +49,7 @@ public class Cli {
         logger.info("Starting ssikit test.");
         
         try {
-            var id = credentials.createId("jane2.doe2@test.edu");
+            var id = credentials.createId("anna.makkara@tautest.edu");
             System.out.println("Student id:");
             System.out.println(id);
             CredentialLib.writeToFile("id.json", id);

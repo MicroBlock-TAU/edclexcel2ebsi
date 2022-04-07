@@ -26,7 +26,7 @@ import id.walt.vclib.credentials.VerifiableId;
 class CredentialLibTest {
     
     private CredentialLib credentials;
-    private final String TEST_STUDENT_EMAIL = "jane2.doe2@test.edu";
+    private final String TEST_STUDENT_EMAIL = "anna.makkara@tautest.edu";
     
     /** Create based on config file for tests.
      * 
@@ -40,7 +40,7 @@ class CredentialLibTest {
      * @return the credential
      */
     private String createTestDiploma() {
-        String diploma = credentials.createDiploma("jane2.doe2@test.edu", "Data and Software Business module");
+        String diploma = credentials.createDiploma("anna.makkara@tautest.edu", "Data and Software Business module");
         assertNotNull(diploma, "app should create a diploma.");
         return diploma;
     }
@@ -49,7 +49,7 @@ class CredentialLibTest {
      * @return the credential
      */
     private String createTestId() {
-        String id = credentials.createId("jane2.doe2@test.edu");
+        String id = credentials.createId("anna.makkara@tautest.edu");
         assertNotNull(id, "app should create a id.");
         return id;
     }
@@ -102,8 +102,8 @@ class CredentialLibTest {
         String idStr = createTestId();
         VerifiableId id = (VerifiableId)VerifiableCredential.Companion.fromString(idStr);
         var subject = id.getCredentialSubject();
-        assertEquals( "Jane2", subject.getFirstName());
-        assertEquals( "Doe2", subject.getFamilyName());
+        assertEquals( "Anna", subject.getFirstName());
+        assertEquals( "Makkara", subject.getFamilyName());
         var identifier = subject.getIdentifier().get(0);
         assertEquals( "Student identification number", identifier.getSchemeID() );
         assertEquals( "x94476556", identifier.getValue());
@@ -129,7 +129,7 @@ class CredentialLibTest {
     }
     
     @Test void listCredentialsForStudent() {
-        var email = "jane2.doe2@test.edu"; 
+        var email = "anna.makkara@tautest.edu"; 
         var expectedAchievements = List.of("Data and Software Business module");
         var achievements = credentials.listCredentialsForStudent(email);
         assertTrue( achievements.size() == expectedAchievements.size() && expectedAchievements.containsAll(achievements) && achievements.containsAll(expectedAchievements), "expected " +expectedAchievements + " got " +achievements  );

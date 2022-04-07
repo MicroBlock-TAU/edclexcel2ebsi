@@ -1,8 +1,10 @@
 # edclexcel2ebsi
 
 A command line tool and java library for creating [EBSI](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/EBSI) credentials from [European Digital Certificate for Learning](https://europa.eu/europass/fi/node/797)
-data stored to an [excel file](https://europa.eu/europass/digital-credentials/issuer/#/home). Very much a work in progress. Currently does not
-create full, useful credentials.
+data stored to an [excel
+file](https://europa.eu/europass/digital-credentials/issuer/#/home). Used in the
+[MicroBlock project's EBSI demo](http://microblock.rd.tuni.fi/). Does not cover
+all possible fields of the credential data model.
 
 ## Requirements
 
@@ -48,79 +50,11 @@ is used to set some options:
 ### Usage example
 
 With the included example data a credential for the data and software business
-course can be created for student who has the email address test2.dan2@test.dat
+module can be created for student who has the email address anna.makkara@tautest.edu
 and stored to file diploma.json using the following command:
 
 ```bash
-./gradlew run --args "issue -f diploma.json 'test2.dan2@test.dat' 'Data and software business'"
-```
-
-The following JSON is then produced and as can be seen it does not yet contain
-much, the latest diploma schema is not yet used  and it has some placeholder
-content:
-
-```json
-{
-  "@context" : [ "https://www.w3.org/2018/credentials/v1" ],
-  "credentialSchema" : {
-    "id" : "https://api.preprod.ebsi.eu/trusted-schemas-registry/v1/schemas/0xbf78fc08a7a9f28f5479f58dea269d3657f54f13ca37d380cd4e92237fb691dd",
-    "type" : "JsonSchemaValidator2018"
-  },
-  "credentialStatus" : {
-    "id" : "https://essif.europa.eu/status/education#higherEducation#392ac7f6-399a-437b-a268-4691ead8f176",
-    "type" : "CredentialStatusList2020"
-  },
-  "credentialSubject" : {
-    "awardingOpportunity" : {
-      "awardingBody" : {
-        "homepage" : "https://www.tuni.fi/en/about-us/tampere-university",
-        "id" : "id",
-        "preferredName" : "Tampere University",
-        "registration" : "FI-12345678"
-      },
-      "id" : "id",
-      "identifier" : "identifier",
-      "location" : "Tampere"
-    },
-    "dateOfBirth" : "2021-02-15",
-    "familyName" : "dan2",
-    "givenNames" : "test2",
-    "gradingScheme" : null,
-    "id" : "did:ebsi:zcfoE1icNUnE69dte1fu47Z",
-    "identifier" : null,
-    "learningAchievement" : {
-      "id" : "urn:epass:learningAchievement:1",
-      "title" : "Data and software business"
-    },
-    "learningSpecification" : {
-      "id" : "urn:epass:qualification:1",
-      "iscedfCode" : [ ],
-      "nqfLevel" : [ ]
-    }
-  },
-  "evidence" : {
-    "documentPresence" : [ "Physical" ],
-    "evidenceDocument" : [ "Passport" ],
-    "id" : "https://essif.europa.eu/tsr-va/evidence/f2aeec97-fc0d-42bf-8ca7-0548192d5678",
-    "subjectPresence" : "Physical",
-    "type" : [ "DocumentVerification" ],
-    "verifier" : "did:ebsi:2962fb784df61baa267c8132497539f8c674b37c1244a7a"
-  },
-  "expirationDate" : "2022-08-31T00:00:00Z",
-  "id" : "education#higherEducation#50894b7b-5864-450f-82b7-4f9805164301",
-  "issuanceDate" : "2021-12-08T16:24:45Z",
-  "issuer" : "did:ebsi:zZHPCeQjSYdyeHWTpDKGwDJ",
-  "validFrom" : "2021-08-31T00:00:00Z",
-  "type" : [ "VerifiableCredential", "VerifiableAttestation", "VerifiableDiploma" ],
-  "proof" : {
-    "type" : "Ed25519Signature2018",
-    "creator" : "did:ebsi:zZHPCeQjSYdyeHWTpDKGwDJ",
-    "created" : "2021-12-08T14:24:45Z",
-    "domain" : "https://api.preprod.ebsi.eu",
-    "nonce" : "ade6cb66-4495-4908-8588-9def68415e42",
-    "jws" : "eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJFZERTQSJ9..KjIxiTdjPMAnem9rNnz6xMf-9pgLXEbTd1UtQrxb6aTVRhQMQxkQ4e9WDd9MP7vVCtSc05CE749e882YMHtVAw"
-  }
-}
+./gradlew run --args "issue -f diploma.json 'anna.makkara@tautest.edu' 'Data and Software Business module'"
 ```
 
 ## For developers

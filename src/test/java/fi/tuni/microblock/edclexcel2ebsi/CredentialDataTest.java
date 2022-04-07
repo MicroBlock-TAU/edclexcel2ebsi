@@ -28,7 +28,7 @@ class CredentialDataTest {
     @Test void getPersonalInfo() {
         try {
             var expectedTitle = "Data and Software Business module";
-            var row = data.getCredential("jane2.doe2@test.edu", expectedTitle );
+            var row = data.getCredential("anna.makkara@tautest.edu", expectedTitle );
             data.credentialsTable.setCurrentRow(row.getRowNum());
             var title = data.credentialsTable.getCellValueStringForCurrentRow(CredentialsTable.TITLE_COLUMN);
             assertEquals( expectedTitle, title);
@@ -90,7 +90,7 @@ class CredentialDataTest {
      * 
      */
     @Test void getRowWithValues() {
-        var email = "jane2.doe2@test.edu";
+        var email = "anna.makkara@tautest.edu";
         var achievement = "Data and Software Business";
         var rowNum = data.personsTable.getRowWithValues(Map.of( PersonsTable.EMAIL_COLUMN, email, PersonsTable.ACHIEVEMENT_COLUMN, achievement )).getRowNum();
         assertEquals( data.personsTable.getCellValueString(rowNum, PersonsTable.EMAIL_COLUMN ), email );
@@ -124,7 +124,7 @@ class CredentialDataTest {
         assertEquals(expected, activities);
     }
     
-    /** Test that we can get assesments and their grades for a person.
+    /** Test that we can get assessments and their grades for a person.
      * 
      */
     @Test void getGrades() {
