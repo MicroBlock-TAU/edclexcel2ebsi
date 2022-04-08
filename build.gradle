@@ -71,11 +71,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
 
     // This dependency is used by the application.
-    implementation( 'id.walt:waltid-ssi-kit:1.7-SNAPSHOT' ) {
+    implementation( 'id.walt:waltid-ssi-kit:1.8.0-SNAPSHOT' ) {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
     implementation 'id.walt.servicematrix:WaltID-ServiceMatrix:1.1.0'
-    implementation 'id.walt:waltid-ssikit-vclib:1.16.0'
+    implementation 'id.walt:waltid-ssikit-vclib:1.17.1'
     //implementation 'com.beust:klaxon:5.5'
     implementation( 'org.apache.poi:poi-ooxml:5.0.0')
     implementation 'info.picocli:picocli:4.6.2'
