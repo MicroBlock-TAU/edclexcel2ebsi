@@ -6,6 +6,7 @@
 package fi.tuni.microblock.edclexcel2ebsi;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class PersonsTable extends DataTable {
     public static final String GRADE_COLUMN = "Grade";
     public final static String IDENTIFIER_1_SCHEME_NAME_COLUMN = "Other Identifier 1 Scheme Name";
     public final static String IDENTIFIER_1_COLUMN = "Other Identifier 1";
+    public static final String DATE_OF_BIRTH_COLUMN = "Date of Birth";  
     protected final static int PERSONS_HEADER_ROW_NUM = 7;
 
     /** Create persons table for the given work book.
@@ -111,6 +113,10 @@ public class PersonsTable extends DataTable {
      */
     public String getOtherIdentifier1() {
         return getCellValueStringForCurrentRow( PersonsTable.IDENTIFIER_1_COLUMN);
+    }
+    
+    public Date getDateOfBirth()  {
+        return getCellValueDateForCurrentRow( PersonsTable.DATE_OF_BIRTH_COLUMN);
     }
     
     /** Get number of row for person with the given email.

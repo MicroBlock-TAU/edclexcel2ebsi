@@ -147,6 +147,10 @@ public abstract class DataTable {
      */
     public Date getCellValueDate( int row, String columnHeading ) throws DiplomaDataProvider.ExcelStructureException {
         var value = getCellValue(row, columnHeading, true);
+        if ( value.equals("")) {
+            return null;
+        }
+        
         try {
             return (Date)value; 
         }

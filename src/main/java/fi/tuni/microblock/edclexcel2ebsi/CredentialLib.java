@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 import id.walt.auditor.Auditor;
 import id.walt.auditor.JsonSchemaPolicy;
+import id.walt.auditor.TrustedIssuerRegistryPolicy;
 import id.walt.auditor.SignaturePolicy;
 import id.walt.auditor.TrustedIssuerDidPolicy;
 import id.walt.auditor.TrustedSubjectDidPolicy;
@@ -189,7 +190,7 @@ public class CredentialLib {
      * @return Verification result.
      */
     public VerificationResult verifyDiploma(String diplomaVp) {
-        //var result = Auditor.Companion.getService().verify(diplomaVp, List.of(new TrustedIssuerDidPolicy(), new TrustedSubjectDidPolicy(), new SignaturePolicy(), new JsonSchemaPolicy() ));
+        //var result = Auditor.Companion.getService().verify(diplomaVp, List.of(new TrustedIssuerDidPolicy(), new TrustedSubjectDidPolicy(), new SignaturePolicy(), new JsonSchemaPolicy(), new TrustedIssuerRegistryPolicy() ));
         var result = Auditor.Companion.getService().verify(diplomaVp, List.of(new TrustedIssuerDidPolicy(), new TrustedSubjectDidPolicy(), new SignaturePolicy() ));
         return result;
     }
