@@ -53,7 +53,7 @@ public class Cli {
             System.out.println("Student id:");
             System.out.println(id);
             CredentialLib.writeToFile("id.json", id);
-            var diploma = credentials.createDiploma( "jane2.doe2@test.edu", "Data and Software Business module" );
+            var diploma = credentials.createDiploma( "anna.makkara@tautest.edu", "Data and Software Business module" );
             System.out.println("Diploma:");
             System.out.println(diploma);
             CredentialLib.writeToFile("diploma.json", diploma);
