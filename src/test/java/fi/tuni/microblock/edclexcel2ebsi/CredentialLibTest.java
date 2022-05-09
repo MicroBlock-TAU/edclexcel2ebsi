@@ -104,6 +104,7 @@ class CredentialLibTest {
         var subject = id.getCredentialSubject();
         assertEquals( "Anna", subject.getFirstName());
         assertEquals( "Makkara", subject.getFamilyName());
+        assertEquals( "1994-03-15", subject.getDateOfBirth());
         var identifier = subject.getIdentifier().get(0);
         assertEquals( "Student identification number", identifier.getSchemeID() );
         assertEquals( "x94476556", identifier.getValue());
