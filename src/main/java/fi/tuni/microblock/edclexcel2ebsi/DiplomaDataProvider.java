@@ -152,14 +152,16 @@ public class DiplomaDataProvider implements SignatoryDataProvider {
         subject.setId(proofConfig.getSubjectDid());
         subject.setFamilyName(data.personsTable.getFamilyName());
         subject.setFirstName(data.personsTable.getGivenName());
+        subject.setNameAndFamilyNameAtBirth( subject.getFirstName() +" " +subject.getFamilyName());
         var dateOfBirth = data.personsTable.getDateOfBirth();
         if ( dateOfBirth != null ) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             subject.setDateOfBirth( formatter.format(dateOfBirth));
         }
         
-        var identifier = new VerifiableId.VerifiableIdSubject.Identifier(data.personsTable.getOtherIdentifier1SchemeName(), data.personsTable.getOtherIdentifier1());
-        subject.setIdentifier(List.of(identifier));
+        //var identifier = new VerifiableId.VerifiableIdSubject.Identifier(data.personsTable.getOtherIdentifier1SchemeName(), data.personsTable.getOtherIdentifier1());
+        //subject.setIdentifier(List.of(identifier));
+        subject.setPersonalIdentifier(data.personsTable.getOtherIdentifier1());
         id.setCredentialSubject(subject);
         id.setId("identity#verifiableID#" +UUID.randomUUID().toString());
         return id;
